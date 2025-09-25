@@ -31,8 +31,8 @@ export const useCourseAccess = (courseId: string) => {
       
       // Call Supabase RPC to check if user has access to this course
       const { data, error } = await supabase.rpc('check_course_access', {
-        p_course_id: courseId,
-        p_user_id: user.id
+        course_id: courseId,
+        user_id: user.id
       });
 
       console.log('📊 Course access result:', { data, error });

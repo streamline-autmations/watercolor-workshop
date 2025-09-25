@@ -5,10 +5,10 @@ import { useAuth } from './useAuth';
 interface CourseInvite {
   id: string;
   course_id: string;
+  email: string;
   token: string;
   expires_at: string;
-  used_at: string | null;
-  created_by: string;
+  redeemed_at: string | null;
   created_at: string;
 }
 
@@ -17,7 +17,7 @@ export const useCourseInvites = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createInvite = useCallback(async (courseId: string, expiresInDays: number = 30) => {
+  const createInvite = useCallback(async (courseId: string, email: string, expiresInDays: number = 30) => {
     if (!user) {
       setError('You must be logged in to create invites');
       return null;
@@ -27,12 +27,12 @@ export const useCourseInvites = () => {
     setError(null);
 
     try {
-      console.log('🎫 Creating invite for course:', courseId, 'expires in:', expiresInDays, 'days');
+      console.log('🎫 Creating invite for course:', courseId, 'email:', email, 'expires in:', expiresInDays, 'days');
       
       const { data, error } = await supabase.rpc('create_course_invite', {
         p_course_id: courseId,
-        p_expires_in_days: expiresInDays,
-        p_created_by: user.id
+        p_email: email,
+        p_expires_in_days: expiresInDays
       });
 
       console.log('📊 Create invite result:', { data, error });
@@ -66,9 +66,14 @@ export const useCourseInvites = () => {
     try {
       console.log('🔍 Fetching invites for course:', courseId || 'all');
       
-      const { data, error } = await supabase.rpc('get_course_invites', {
-        p_course_id: courseId || null
-      });
+      // Use the course_invites_admin view to get invites with admin details
+      let query = supabase.from('course_invites_admin').select('*');
+      
+      if (courseId) {
+        query = query.eq('course_id', courseId);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       console.log('📊 Get invites result:', { data, error });
 
@@ -101,9 +106,11 @@ export const useCourseInvites = () => {
     try {
       console.log('🗑️ Revoking invite:', inviteId);
       
-      const { error } = await supabase.rpc('revoke_course_invite', {
-        p_invite_id: inviteId
-      });
+      // Delete the invite from the course_invites table
+      const { error } = await supabase
+        .from('course_invites')
+        .delete()
+        .eq('id', inviteId);
 
       console.log('📊 Revoke invite result:', { error });
 

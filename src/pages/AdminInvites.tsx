@@ -15,9 +15,10 @@ import { toast } from 'sonner';
 interface Invite {
   id: string;
   course_id: string;
+  email: string;
   token: string;
   expires_at: string;
-  used_at: string | null;
+  redeemed_at: string | null;
   created_at: string;
 }
 
@@ -26,8 +27,9 @@ export default function AdminInvites() {
   const { createInvite, getInvites, revokeInvite, loading, error } = useCourseInvites();
   const [invites, setInvites] = useState<Invite[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [expiresInDays, setExpiresInDays] = useState<number>(30);
-  const [newInvite, setNewInvite] = useState<{ courseId: string; token: string; expiresAt: string } | null>(null);
+  const [newInvite, setNewInvite] = useState<{ courseId: string; email: string; token: string; expiresAt: string } | null>(null);
 
   // Check if user is admin (you can implement your own admin check)
   const isAdmin = user?.email?.includes('admin') || user?.email?.includes('blom'); // Simple admin check
@@ -49,10 +51,16 @@ export default function AdminInvites() {
       return;
     }
 
-    const result = await createInvite(selectedCourse, expiresInDays);
+    if (!email) {
+      toast.error('Please enter an email address');
+      return;
+    }
+
+    const result = await createInvite(selectedCourse, email, expiresInDays);
     if (result) {
       setNewInvite({
         courseId: selectedCourse,
+        email: email,
         token: result.token,
         expiresAt: result.expires_at
       });
@@ -91,8 +99,8 @@ export default function AdminInvites() {
   };
 
   const getStatusBadge = (invite: Invite) => {
-    if (invite.used_at) {
-      return <Badge variant="secondary">Used</Badge>;
+    if (invite.redeemed_at) {
+      return <Badge variant="secondary">Redeemed</Badge>;
     }
     
     const now = new Date();
@@ -151,7 +159,7 @@ export default function AdminInvites() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <Label htmlFor="course">Course</Label>
                 <Select value={selectedCourse} onValueChange={setSelectedCourse}>
@@ -168,6 +176,16 @@ export default function AdminInvites() {
                 </Select>
               </div>
               <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="student@example.com"
+                />
+              </div>
+              <div>
                 <Label htmlFor="expires">Expires In (Days)</Label>
                 <Input
                   id="expires"
@@ -179,7 +197,7 @@ export default function AdminInvites() {
                 />
               </div>
               <div className="flex items-end">
-                <Button onClick={handleCreateInvite} disabled={loading || !selectedCourse} className="w-full">
+                <Button onClick={handleCreateInvite} disabled={loading || !selectedCourse || !email} className="w-full">
                   {loading ? 'Creating...' : 'Create Invite'}
                 </Button>
               </div>
@@ -196,6 +214,7 @@ export default function AdminInvites() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Course: {getCourseTitle(newInvite.courseId)}</Label>
+                <Label>Email: {newInvite.email}</Label>
                 <Label>Expires: {formatDate(newInvite.expiresAt)}</Label>
                 <Label>Invite Link:</Label>
                 <div className="flex space-x-2">
@@ -244,9 +263,10 @@ export default function AdminInvites() {
                         {getStatusBadge(invite)}
                       </div>
                       <div className="text-sm text-gray-600 space-y-1">
+                        <div>Email: {invite.email}</div>
                         <div>Created: {formatDate(invite.created_at)}</div>
                         <div>Expires: {formatDate(invite.expires_at)}</div>
-                        {invite.used_at && <div>Used: {formatDate(invite.used_at)}</div>}
+                        {invite.redeemed_at && <div>Redeemed: {formatDate(invite.redeemed_at)}</div>}
                       </div>
                       <div className="text-xs font-mono text-gray-500">
                         Token: {invite.token.substring(0, 8)}...
@@ -260,7 +280,7 @@ export default function AdminInvites() {
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
-                      {!invite.used_at && (
+                      {!invite.redeemed_at && (
                         <Button
                           onClick={() => handleRevokeInvite(invite.id)}
                           size="sm"
