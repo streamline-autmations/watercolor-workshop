@@ -17,6 +17,7 @@ interface AuthContextType {
   loading: boolean;
   isProfileComplete: boolean;
   signOut: () => Promise<void>;
+  fetchUserProfile: (userId: string) => Promise<Profile | null>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -220,7 +221,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading,
     isProfileComplete,
     signOut,
+    fetchUserProfile,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

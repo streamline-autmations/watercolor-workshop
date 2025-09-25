@@ -19,6 +19,10 @@ import UpdatePassword from "./pages/UpdatePassword";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import SetupProfile from "./pages/SetupProfile";
+import AcceptInvite from "./pages/AcceptInvite";
+import AdminInvites from "./pages/AdminInvites";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { CourseProtectedRoute } from "./components/CourseProtectedRoute";
 
 const AppRoutes = () => {
   const { session, loading, isProfileComplete, user, profile } = useAuth();
@@ -53,6 +57,7 @@ const AppRoutes = () => {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -68,6 +73,7 @@ const AppRoutes = () => {
     return (
       <Routes>
         <Route path="/account-setup" element={<SetupProfile />} />
+        <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="*" element={<Navigate to="/account-setup" replace />} />
@@ -82,10 +88,16 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/course/:slug" element={<CourseDetail />} />
+        <Route path="/accept-invite" element={<AcceptInvite />} />
+        <Route path="/course/:slug" element={
+          <CourseProtectedRoute>
+            <CourseDetail />
+          </CourseProtectedRoute>
+        } />
         <Route path="/lesson/:lessonId" element={<LessonPlayer />} />
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin/invites" element={<AdminInvites />} />
         <Route path="/course/:slug/certificate" element={<Certificate />} />
         {/* Redirect authenticated users away from login and account setup */}
         <Route path="/login" element={<Navigate to="/home" replace />} />
