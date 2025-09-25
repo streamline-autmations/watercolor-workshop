@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Certificate from "./pages/Certificate";
 import ScrollToTop from "./components/ScrollToTop";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthProvider";
 import { useAuth } from "./hooks/useAuth";
 import { Skeleton } from "./components/ui/skeleton";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -19,31 +19,17 @@ import UpdatePassword from "./pages/UpdatePassword";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import SetupProfile from "./pages/SetupProfile";
-import { useAuthGate } from "./hooks/useAuthGate";
 
 const AppRoutes = () => {
-  const { session, isLoading, isProfileComplete } = useAuth();
-  const { checking, error: authError } = useAuthGate();
+  const { session, loading, isProfileComplete } = useAuth();
 
-  if (checking || isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-bloom">
-        <Skeleton className="h-20 w-20 rounded-full" />
-      </div>
-    );
-  }
-
-  if (authError) {
+  // Show loading spinner while checking auth state
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Auth Error: {authError}</p>
-          <button 
-            onClick={() => window.location.href = '/login?reset=1'}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Hard Reset
-          </button>
+          <Skeleton className="h-20 w-20 rounded-full mx-auto mb-4" />
+          <p className="text-body-text">Loading...</p>
         </div>
       </div>
     );

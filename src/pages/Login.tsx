@@ -1,7 +1,7 @@
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, Navigate } from 'react-router-dom';
 import { LoaderCircle } from 'lucide-react';
-import { useAuthGate } from '@/hooks/useAuthGate';
+import { useAuth } from '@/hooks/useAuth';
 import { Auth } from '@supabase/auth-ui-react';
 import { supabase } from '@/lib/supabase';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
@@ -13,7 +13,7 @@ const Login = () => {
   const heroImage = isMobile ? '/hero-mobile-3.webp' : '/hero-desktop-3.webp';
   const [error, setError] = useState<string | null>(null);
 
-  const { checking, session, error: authError } = useAuthGate();
+  const { session, loading } = useAuth();
 
   // Handle hard reset
   useEffect(() => {
@@ -22,26 +22,10 @@ const Login = () => {
     }
   }, []);
 
-  if (checking) {
+  if (loading) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-bloom">
         <LoaderCircle className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (authError) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-bloom">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">Auth Error: {authError}</p>
-          <button 
-            onClick={() => hardResetAuth()}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Hard Reset
-          </button>
-        </div>
       </div>
     );
   }
