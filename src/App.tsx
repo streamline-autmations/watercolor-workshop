@@ -21,10 +21,21 @@ import Privacy from "./pages/Privacy";
 import SetupProfile from "./pages/SetupProfile";
 
 const AppRoutes = () => {
-  const { session, loading, isProfileComplete } = useAuth();
+  const { session, loading, isProfileComplete, user, profile } = useAuth();
+
+  // Debug logging
+  console.log('🎯 AppRoutes state:', { 
+    loading, 
+    hasSession: !!session, 
+    hasUser: !!user, 
+    hasProfile: !!profile, 
+    isProfileComplete,
+    userId: user?.id 
+  });
 
   // Show loading spinner while checking auth state
   if (loading) {
+    console.log('⏳ Showing loading spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom">
         <div className="text-center">
@@ -37,6 +48,7 @@ const AppRoutes = () => {
 
   // User is not logged in.
   if (!session) {
+    console.log('❌ No session, redirecting to login');
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -51,6 +63,7 @@ const AppRoutes = () => {
 
   // User is logged in, but their profile is not complete.
   if (!isProfileComplete) {
+    console.log('⚠️ Session exists but profile incomplete, redirecting to account setup');
     return (
       <Routes>
         <Route path="/account-setup" element={<SetupProfile />} />
@@ -62,6 +75,7 @@ const AppRoutes = () => {
   }
 
   // Fully authenticated and profile complete
+  console.log('✅ User fully authenticated, showing app');
   return (
     <AppShell>
       <Routes>
