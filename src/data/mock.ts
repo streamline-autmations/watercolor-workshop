@@ -29,7 +29,7 @@ const allCourses: Course[] = [
     id: "watercolour-christmas",
     title: "Blom Flower Workshop",
     slug: "blom-flower-workshop",
-    cover: "/christmas-watercolor-card.webp",
+    cover: "/blom-flower-workshop.webp",
     summary: "Learn to paint beautiful, delicate flower watercolor nail art. Master the art of creating stunning floral designs that will make your clients bloom with joy.",
     level: "Beginner",
     tags: ["Watercolor", "Nail Art", "Flowers", "Craft"],
