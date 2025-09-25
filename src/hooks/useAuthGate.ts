@@ -1,32 +1,25 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 export function useAuthGate() {
-  const [loading, setLoading] = useState(true);
+  const [checking, setChecking] = useState(true);
   const [session, setSession] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (isMounted) {
+      try {
+        const { data } = await supabase.auth.getSession();
         setSession(data.session ?? null);
-        setLoading(false);
+      } catch (e: any) {
+        setError(e.message || "Auth check failed");
+      } finally {
+        setChecking(false);
       }
     })();
-
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
-      if (isMounted) {
-        setSession(s);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      sub.subscription.unsubscribe();
-    };
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  return { loading, session };
+  return { checking, session, error };
 }

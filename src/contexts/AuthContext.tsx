@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 type Profile = {
@@ -47,6 +47,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
 
       if (profileError && profileError.code !== 'PGRST116') {
+        // If profile doesn't exist, create it
+        if (profileError.code === 'PGRST116') {
+          const { error: upsertError } = await supabase
+            .from('profiles')
+            .upsert({ user_id: userId, role: 'student' }, { onConflict: 'user_id' });
+          
+          if (upsertError) {
+            console.error('Profile upsert error:', upsertError);
+            return null;
+          }
+          
+          // Return a basic profile
+          return { user_id: userId, first_name: null, last_name: null, username: null, avatar_url: null };
+        }
+        
         toast.error('Could not fetch your profile.');
         console.error('Profile fetch error:', profileError);
         await signOut();

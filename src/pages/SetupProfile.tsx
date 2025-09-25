@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -67,6 +67,8 @@ const PasswordStrengthMeter = ({ score }: { score: number }) => {
 
 export default function SetupProfile() {
   const [error, setError] = useState<string | null>(null);
+  const [msg, setMsg] = useState("Setting up your account...");
+  const [isAuthCallback, setIsAuthCallback] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<SetupProfileFormValues>({
@@ -87,6 +89,65 @@ export default function SetupProfile() {
   }), [password, confirmPassword]);
 
   const passwordScore = useMemo(() => Object.values(passwordChecks).filter(Boolean).length - (passwordChecks.match ? 1 : 0), [passwordChecks]);
+
+  // Auth callback handler
+  useEffect(() => {
+    (async () => {
+      try {
+        // 0) sanity
+        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+          throw new Error("Supabase env vars missing in build");
+        }
+
+        const href = window.location.href;
+
+        // A) PKCE code
+        const url = new URL(href);
+        const code = url.searchParams.get("code");
+        if (code) {
+          setMsg("Creating your account…");
+          setIsAuthCallback(true);
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw new Error("Exchange failed: " + error.message);
+        } else {
+          // B) Hash tokens
+          const hash = new URLSearchParams(href.split("#")[1] || "");
+          const at = hash.get("access_token");
+          const rt = hash.get("refresh_token");
+          if (at && rt) {
+            setMsg("Creating your account…");
+            setIsAuthCallback(true);
+            const { error } = await supabase.auth.setSession({ access_token: at, refresh_token: rt });
+            if (error) throw new Error("setSession failed: " + error.message);
+          }
+        }
+
+        if (isAuthCallback) {
+          const { data: sess } = await supabase.auth.getSession();
+          if (!sess.session) throw new Error("No active session after auth");
+
+          setMsg("Finalizing profile…");
+          const { data: me } = await supabase.auth.getUser();
+          const uid = me.user?.id;
+          if (!uid) throw new Error("No user id");
+
+          const full_name = me.user?.user_metadata?.full_name || "";
+          // IMPORTANT: upsert WITHOUT .select() to avoid extra RLS read
+          const { error: pErr } = await supabase
+            .from("profiles")
+            .upsert({ user_id: uid, full_name, role: "student" }, { onConflict: "user_id" });
+          if (pErr) throw new Error("Profile upsert: " + pErr.message);
+
+          window.location.replace("/home");
+        }
+      } catch (e: any) {
+        console.error(e);
+        setError(e.message || "Unexpected error");
+        setMsg("We hit a snag.");
+        setIsAuthCallback(false);
+      }
+    })();
+  }, [isAuthCallback]);
 
   useEffect(() => {
     const fetchUserMetadata = async () => {
@@ -125,6 +186,26 @@ export default function SetupProfile() {
       setError(errorMessage);
     }
   };
+
+  // Show auth callback loading state
+  if (isAuthCallback) {
+    return (
+      <div className="min-h-screen bg-account-setup-gradient flex items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          <div className="flex justify-center mb-8">
+            <img src="/blom-academy.png" alt="BLOM Academy Logo" className="w-40" />
+          </div>
+          <Card className="shadow-md border-none rounded-2xl">
+            <CardContent className="p-8 md:p-10 text-center">
+              <LoaderCircle className="h-10 w-10 animate-spin mx-auto mb-4" />
+              <p className="text-lg">{msg}</p>
+              {error && <p className="text-red-600 mt-4">{error}</p>}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-account-setup-gradient flex items-center justify-center p-4">

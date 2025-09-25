@@ -3,19 +3,45 @@ import { Link, Navigate } from 'react-router-dom';
 import { LoaderCircle } from 'lucide-react';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { Auth } from '@supabase/auth-ui-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { hardResetAuth } from '@/utils/hardResetAuth';
+import { useEffect, useState } from 'react';
 
 const Login = () => {
   const isMobile = useIsMobile();
   const heroImage = isMobile ? '/hero-mobile-3.webp' : '/hero-desktop-3.webp';
+  const [error, setError] = useState<string | null>(null);
 
-  const { loading, session } = useAuthGate();
+  const { checking, session, error: authError } = useAuthGate();
 
-  if (loading) {
+  // Handle hard reset
+  useEffect(() => {
+    if (new URL(location.href).searchParams.get("reset") === "1") {
+      hardResetAuth();
+    }
+  }, []);
+
+  if (checking) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-bloom">
         <LoaderCircle className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-bloom">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Auth Error: {authError}</p>
+          <button 
+            onClick={() => hardResetAuth()}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Hard Reset
+          </button>
+        </div>
       </div>
     );
   }
@@ -24,23 +50,6 @@ const Login = () => {
     return <Navigate to="/home" replace />;
   }
 
-  const handleHardReset = async () => {
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } finally {
-      localStorage.removeItem('device_id');
-      sessionStorage.clear();
-      if (indexedDB?.databases) {
-        const dbs = await indexedDB.databases();
-        for (const db of dbs) {
-          if (db.name) {
-            indexedDB.deleteDatabase(db.name);
-          }
-        }
-      }
-      location.reload();
-    }
-  };
 
   return (
     <div
@@ -78,6 +87,7 @@ const Login = () => {
             theme="light"
             view="sign_in"
             showLinks={false}
+            redirectTo={`${window.location.origin}/account-setup`}
             localization={{
               variables: {
                 sign_in: {
@@ -105,7 +115,7 @@ const Login = () => {
           </div>
           <div className="text-center mt-4">
             <button
-              onClick={handleHardReset}
+              onClick={() => hardResetAuth()}
               className="text-xs text-gray-500 underline hover:text-gray-700"
               type="button"
             >
