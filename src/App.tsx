@@ -22,6 +22,7 @@ import SetupProfile from "./pages/SetupProfile";
 
 const AppRoutes = () => {
   const { session, loading, isProfileComplete, user, profile } = useAuth();
+  // Debug: Force update to trigger deployment
 
   // Debug logging
   console.log('🎯 AppRoutes state:', { 
