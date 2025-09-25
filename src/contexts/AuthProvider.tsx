@@ -46,19 +46,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     console.log('🔍 Fetching profile for userId:', userId);
     try {
-      const { data: profileData, error: profileError } = await supabase
+      console.log('📡 Making Supabase query to profiles table...');
+      
+      // Add timeout to detect hanging queries
+      const queryPromise = supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Profile query timeout after 10 seconds')), 10000)
+      );
+      
+      const { data: profileData, error: profileError } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
       console.log('📊 Profile query result:', { 
         hasData: !!profileData, 
+        data: profileData,
         error: profileError?.message,
-        errorCode: profileError?.code 
+        errorCode: profileError?.code,
+        errorDetails: profileError?.details,
+        errorHint: profileError?.hint
       });
 
       if (profileError) {
+        console.log('❌ Profile query failed with error:', profileError);
+        
         if (profileError.code === 'PGRST116') {
           console.log('👤 Profile doesn\'t exist, creating new one...');
           // Profile doesn't exist, create it
@@ -76,14 +90,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return { user_id: userId, first_name: null, last_name: null, username: null, avatar_url: null };
         }
         
-        console.error('❌ Profile fetch error:', profileError);
+        console.error('❌ Profile fetch error (not PGRST116):', profileError);
         return null;
       }
       
-      console.log('✅ Profile found:', profileData);
+      console.log('✅ Profile found successfully:', profileData);
       return profileData;
     } catch (error) {
       console.error('❌ Unexpected error fetching profile:', error);
+      console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
       return null;
     }
   }, []);
@@ -135,6 +150,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setProfile(null);
             setIsProfileComplete(false);
           }
+          
+          console.log('🏁 Setting loading to false');
+          setLoading(false);
         }
       } catch (error) {
         console.error('❌ Error initializing auth:', error);
