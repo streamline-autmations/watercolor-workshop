@@ -26,6 +26,17 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
+    // Special case: Grant access to Christmas course for all authenticated users
+    if (courseId === 'watercolour-christmas') {
+      console.log('🎄 Granting automatic access to Christmas course for user:', user.id);
+      setAccess({
+        hasAccess: true,
+        loading: false,
+        error: null
+      });
+      return;
+    }
+
     try {
       console.log('🔍 Checking access for course:', courseId, 'user:', user.id);
       
