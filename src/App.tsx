@@ -21,6 +21,7 @@ import Privacy from "./pages/Privacy";
 import SetupProfile from "./pages/SetupProfile";
 import AcceptInvite from "./pages/AcceptInvite";
 import AdminInvites from "./pages/AdminInvites";
+import AdminAccess from "./pages/AdminAccess";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CourseProtectedRoute } from "./components/CourseProtectedRoute";
 
@@ -113,6 +114,7 @@ const AppRoutes = () => {
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/invites" element={<AdminInvites />} />
+        <Route path="/admin/access" element={<AdminAccess />} />
         <Route path="/course/:slug/certificate" element={<Certificate />} />
         {/* Redirect authenticated users away from login and account setup */}
         <Route path="/login" element={<Navigate to="/home" replace />} />
