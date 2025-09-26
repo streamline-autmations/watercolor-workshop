@@ -54,7 +54,7 @@ const allCourses: Course[] = [
     id: "blom-flower-workshop",
     title: "Flower Nail Art Workshop",
     slug: "blom-flower-workshop",
-    cover: "/blom-flower-workshop.webp",
+    cover: "/Blom-flower-workshop.webp",
     summary: "Master the art of creating stunning floral nail designs with our comprehensive flower nail art workshop. Learn essential techniques and create beautiful flower patterns that will make your clients bloom with joy.",
     level: "Beginner",
     tags: ["Nail Art", "Flowers", "Watercolor", "Craft"],
