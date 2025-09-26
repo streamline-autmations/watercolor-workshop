@@ -67,8 +67,23 @@ const AppRoutes = () => {
     );
   }
 
+  // Show loading while checking profile for authenticated users
+  if (session && user && loading) {
+    console.log('⏳ Session exists, checking profile...');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bloom">
+        <div className="text-center">
+          <Skeleton className="h-20 w-20 rounded-full mx-auto mb-4" />
+          <p className="text-body-text">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   // User is logged in, but their profile is not complete.
-  if (!isProfileComplete) {
+  // Only redirect to account setup if we have a session but no profile data
+  // (not just during the initial loading phase)
+  if (!isProfileComplete && session && user && !loading) {
     console.log('⚠️ Session exists but profile incomplete, redirecting to account setup');
     return (
       <Routes>
