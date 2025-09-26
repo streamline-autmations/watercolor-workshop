@@ -50,6 +50,31 @@ const allCourses: Course[] = [
         { name: "Bowl of Water", image: "/water.webp" },
     ]
   },
+  {
+    id: "blom-flower-workshop",
+    title: "Flower Nail Art Workshop",
+    slug: "blom-flower-workshop",
+    cover: "/blom-flower-workshop.webp",
+    summary: "Master the art of creating stunning floral nail designs with our comprehensive flower nail art workshop. Learn essential techniques and create beautiful flower patterns that will make your clients bloom with joy.",
+    level: "Beginner",
+    tags: ["Nail Art", "Flowers", "Watercolor", "Craft"],
+    durationText: "Self-paced",
+    tagline: "Create beautiful floral nail art designs.",
+    description: "Dive deep into the world of floral nail art with our step-by-step workshop. From basic petal techniques to complex flower designs, you'll learn everything needed to create stunning botanical nail art that will set your work apart.",
+    notes: [
+      "Kit not included. A full list of recommended materials is provided inside the course.",
+      "Access to a private Facebook group for sharing your floral creations.",
+      "Certificate of completion available upon finishing all lessons.",
+    ],
+    materials: [
+        { name: "Fine Line Detailer Brush", image: "/brush.webp", link: "https://www.takealot.com/5pcs-nail-stretching-brush-set-line-pattern-paint-pen-nail-stret/PLID96616954" },
+        { name: "Practice Tips", image: "/tips.webp", link: "https://www.takealot.com/imbali-portable-fan-gel-polish-colour-display-natural-nail-colou/PLID64858431" },
+        { name: "Watercolor Palette", image: "/palette.webp", link: "https://atlaspaints.co.za/shop/mont-marte-two-seasons-watercolours-18pce-12ml/" },
+        { name: "White Gel Polish or Acrylic", image: "/gel.webp", link: "https://artattack.co.za/iris-acrylic/iris-acrylic-paints-75ml-tubes/" },
+        { name: "Buffer", image: "/buffer.webp", link: "https://www.takealot.com/professional-nail-and-beauty-4-way-white-buffer/PLID91636988" },
+        { name: "Bowl of Water", image: "/water.webp" },
+    ]
+  },
 ];
 
 export const courses: Course[] = allCourses.filter(course => course.slug !== 'online-watercolour-workshop');
@@ -68,6 +93,12 @@ export const modules: Module[] = [
   { id: "xmas-m3", courseId: "watercolour-christmas", title: "Module 3 – Step-by-Step Tutorials", order: 3, icon: "Paintbrush" },
   { id: "xmas-m4", courseId: "watercolour-christmas", title: "Module 4 – Sealing Your Designs", order: 4, icon: "Award" },
   { id: "xmas-m5", courseId: "watercolour-christmas", title: "Module 5 – Certificate of Completion", order: 5, icon: "Compass" },
+  
+  // Flower Nail Art Workshop Modules
+  { id: "flower-m1", courseId: "blom-flower-workshop", title: "Module 1 – Welcome & Materials", order: 1, icon: "Sparkles" },
+  { id: "flower-m2", courseId: "blom-flower-workshop", title: "Module 2 – Practice Flowers", order: 2, icon: "Flower" },
+  { id: "flower-m3", courseId: "blom-flower-workshop", title: "Module 3 – Step-by-Step Designs", order: 3, icon: "Paintbrush" },
+  { id: "flower-m4", courseId: "blom-flower-workshop", title: "Module 4 – Certificate of Completion", order: 4, icon: "Award" },
 ];
 
 export const lessons: Lesson[] = [
@@ -110,7 +141,33 @@ export const lessons: Lesson[] = [
   { id: "xmas-l4-1", moduleId: "xmas-m4", title: "Sealing Your Designs", durationSec: 240, poster: "https://picsum.photos/seed/xmas-sealing/400/225", content: `<h3>How to seal in your designs.</h3><p>Properly sealing your watercolor art is crucial for a long-lasting, professional finish. This video demonstrates the best techniques.</p><p><strong>Product Feature:</strong> For an extra touch of festive sparkle, we recommend using the <strong>Blom Top Coat Glitter</strong>. It adds a beautiful, subtle shimmer while providing a strong, protective layer.</p>`, resources: [], order: 1 },
   { id: "xmas-l4-2", moduleId: "xmas-m4", title: "Sealing your designs and sugaring", durationSec: 300, poster: "https://picsum.photos/seed/xmas-sealing-sugaring/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/3fb00c94-4649-4ed9-bf91-e82ee284231c?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 2 },
   // Module 5
-  { id: "xmas-l5-1", moduleId: "xmas-m5", title: "Certificate Mini-Assignment", durationSec: 60, poster: "https://picsum.photos/seed/xmas-cert/400/225", content: `<h2>🎓 Mini Assignment for Your Certificate of Completion</h2><p>To receive your Certificate of Completion, you’ll need to complete a short but important assignment. This ensures that you’ve practiced the skills taught in the workshop and can confidently apply them.</p><h3>What to Submit:</h3><ul><li><strong>4 individual photos</strong> – one of each design you learned in the workshop.</li><li><strong>1 group photo</strong> – showing all four designs together.</li></ul><h3>How to Submit:</h3><p>Please email your photos to: <strong><a href="mailto:shopblomcosmetics@gmail.com" class="text-primary hover:underline">shopblomcosmetics@gmail.com</a></strong></p><h3>What Happens Next:</h3><ol><li>Your work will be reviewed by your mentor.</li><li>If your designs meet the standard, you will receive your Certificate of Completion via email.</li><li>If improvements are needed, you’ll receive personalized feedback and guidance on what to practice. Once you’ve refined your work, you can resubmit your photos for review again.</li></ol><p>This process is not about perfection—it’s about growth. 💕 By completing this assignment, you’ll not only earn your certificate but also gain confidence in creating these festive watercolor nail designs.</p>`, resources: [], order: 1 },
+  { id: "xmas-l5-1", moduleId: "xmas-m5", title: "Certificate Mini-Assignment", durationSec: 60, poster: "https://picsum.photos/seed/xmas-cert/400/225", content: `<h2>🎓 Mini Assignment for Your Certificate of Completion</h2><p>To receive your Certificate of Completion, you'll need to complete a short but important assignment. This ensures that you've practiced the skills taught in the workshop and can confidently apply them.</p><h3>What to Submit:</h3><ul><li><strong>4 individual photos</strong> – one of each design you learned in the workshop.</li><li><strong>1 group photo</strong> – showing all four designs together.</li></ul><h3>How to Submit:</h3><p>Please email your photos to: <strong><a href="mailto:shopblomcosmetics@gmail.com" class="text-primary hover:underline">shopblomcosmetics@gmail.com</a></strong></p><h3>What Happens Next:</h3><ol><li>Your work will be reviewed by your mentor.</li><li>If your designs meet the standard, you will receive your Certificate of Completion via email.</li><li>If improvements are needed, you'll receive personalized feedback and guidance on what to practice. Once you've refined your work, you can resubmit your photos for review again.</li></ol><p>This process is not about perfection—it's about growth. 💕 By completing this assignment, you'll not only earn your certificate but also gain confidence in creating these festive watercolor nail designs.</p>`, resources: [], order: 1 },
+
+  // Flower Nail Art Workshop Lessons
+  // Module 1 - Welcome & Materials
+  { id: "flower-l1-1", moduleId: "flower-m1", title: "Introduction", durationSec: 120, poster: "https://picsum.photos/seed/flower-intro/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/Blom-Workshop-Introduction.mp4?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1, isPreview: true },
+  { id: "flower-l1-2", moduleId: "flower-m1", title: "Required Materials Checklist", durationSec: 60, poster: "https://picsum.photos/seed/flower-materials/400/225", content: `<h3>Products that will be needed</h3><p>Please see the "Required Materials" section on the main course page for a full list of items needed for this workshop.</p><p>Watercolor Palettes are available at PNA stores nationwide.</p>`, resources: [], order: 2 },
+  
+  // Module 2 - Practice Flowers
+  { id: "flower-l2-1", moduleId: "flower-m2", title: "Practice Petals – Part 1", durationSec: 180, poster: "https://picsum.photos/seed/flower-petals-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/1205a60b-9c0b-4231-be7f-c835c983bbbf?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
+  { id: "flower-l2-2", moduleId: "flower-m2", title: "Practice Petals – Part 2", durationSec: 180, poster: "https://picsum.photos/seed/flower-petals-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/1205a60b-9c0b-4231-be7f-c835c983bbbf?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 2 },
+  { id: "flower-l2-3", moduleId: "flower-m2", title: "Petals Design", durationSec: 240, poster: "https://picsum.photos/seed/flower-petals-design/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/1b11d1cb-a72d-4bb0-8404-d5e12d6a6530?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 3 },
+  
+  // Module 3 - Step-by-Step Designs
+  { id: "flower-l3-1", moduleId: "flower-m3", title: "Design 1 – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/flower-d1-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/1de7b54d-d708-4aaf-b178-b55b26a25809?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
+  { id: "flower-l3-2", moduleId: "flower-m3", title: "Design 1 – Part 2", durationSec: 300, poster: "https://picsum.photos/seed/flower-d1-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/27924541-917f-4089-8141-2112e7000ccc?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 2 },
+  { id: "flower-l3-3", moduleId: "flower-m3", title: "Design 1 – Part 3", durationSec: 300, poster: "https://picsum.photos/seed/flower-d1-3/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/Blom-Design-1-Part-3.mp4?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 3 },
+  { id: "flower-l3-4", moduleId: "flower-m3", title: "Design 2 – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/flower-d2-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/1d5f44d4-2f3c-4c2f-b1a9-07cbea5cb6f2?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 4 },
+  { id: "flower-l3-5", moduleId: "flower-m3", title: "Design 2 – Part 2", durationSec: 300, poster: "https://picsum.photos/seed/flower-d2-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/d7f535d9-66e8-4c14-bf1e-026bce2200e1?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 5 },
+  { id: "flower-l3-6", moduleId: "flower-m3", title: "Design 3 – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/flower-d3-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/927e52c5-fe56-4a98-87eb-b75151bdd0e8?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 6 },
+  { id: "flower-l3-7", moduleId: "flower-m3", title: "Design 3 – Part 2", durationSec: 300, poster: "https://picsum.photos/seed/flower-d3-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/7f63e3e4-4667-4593-9a2a-9afd5f9e0c2f?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 7 },
+  { id: "flower-l3-8", moduleId: "flower-m3", title: "Design 3 – Part 3", durationSec: 300, poster: "https://picsum.photos/seed/flower-d3-3/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/fa897e9d-e2e7-4ffa-a4ad-d234e96d616d?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 8 },
+  { id: "flower-l3-9", moduleId: "flower-m3", title: "Design 4 – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/flower-d4-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/Design-4-Part-1.mp4?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 9 },
+  { id: "flower-l3-10", moduleId: "flower-m3", title: "Design 4 – Part 2", durationSec: 300, poster: "https://picsum.photos/seed/flower-d4-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/Design-4-Part-2.mp4?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 10 },
+  { id: "flower-l3-11", moduleId: "flower-m3", title: "Design 4 – Part 3", durationSec: 300, poster: "https://picsum.photos/seed/flower-d4-3/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/a4960efc-4eeb-41b7-93a6-af94f214e457?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 11 },
+  
+  // Module 4 - Certificate of Completion
+  { id: "flower-l4-1", moduleId: "flower-m4", title: "Certificate Mini-Assignment", durationSec: 60, poster: "https://picsum.photos/seed/flower-cert/400/225", content: `<h2>🎓 Mini Assignment for Your Certificate of Completion</h2><p>To receive your Certificate of Completion, you'll need to complete a short but important assignment. This ensures that you've practiced the skills taught in the workshop and can confidently apply them.</p><h3>What to Submit:</h3><ul><li><strong>4 individual photos</strong> – one of each design you learned in the workshop.</li><li><strong>1 group photo</strong> – showing all four designs together.</li></ul><h3>How to Submit:</h3><p>Please email your photos to: <strong><a href="mailto:shopblomcosmetics@gmail.com" class="text-primary hover:underline">shopblomcosmetics@gmail.com</a></strong></p><h3>What Happens Next:</h3><ol><li>Your work will be reviewed by your mentor.</li><li>If your designs meet the standard, you will receive your Certificate of Completion via email.</li><li>If improvements are needed, you'll receive personalized feedback and guidance on what to practice. Once you've refined your work, you can resubmit your photos for review again.</li></ol><p>This process is not about perfection—it's about growth. 💕 By completing this assignment, you'll not only earn your certificate but also gain confidence in creating these beautiful floral nail art designs.</p>`, resources: [], order: 1 },
 ];
 
 export const getCourseData = (slug: string) => {
