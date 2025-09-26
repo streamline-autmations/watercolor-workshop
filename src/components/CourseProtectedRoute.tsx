@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCourseAccess } from '@/hooks/useCourseAccess';
+import { getCourseData } from '@/data/mock';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,9 +14,35 @@ interface CourseProtectedRouteProps {
 }
 
 export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) => {
-  const { courseId } = useParams<{ courseId: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { session, loading: authLoading } = useAuth();
-  const { hasAccess, loading: accessLoading, error } = useCourseAccess(courseId || '');
+  
+  // Get course data to convert slug to course ID
+  const courseData = getCourseData(slug || '');
+  const courseId = courseData?.course.id || '';
+  
+  const { hasAccess, loading: accessLoading, error } = useCourseAccess(courseId);
+
+  // If course doesn't exist, show not found
+  if (!courseData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bloom p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Course Not Found</CardTitle>
+            <CardDescription>
+              The course you're looking for doesn't exist.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.href = '/explore'} className="w-full">
+              Browse Courses
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Show loading spinner while checking auth or access
   if (authLoading || accessLoading) {
