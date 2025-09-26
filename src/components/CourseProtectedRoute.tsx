@@ -67,9 +67,9 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
       <div className="min-h-screen flex items-center justify-center bg-bloom p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-red-600">Access Error</CardTitle>
+            <CardTitle className="text-2xl font-bold text-red-600">Unable to Access Course</CardTitle>
             <CardDescription>
-              There was a problem checking your course access.
+              We're having trouble checking your course access. Please try again.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -97,7 +97,7 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
             <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <CardTitle className="text-2xl font-bold">Course Access Required</CardTitle>
             <CardDescription>
-              You don't have access to this course. You may need an invite or to purchase access.
+              You don't have access to this course yet. You may need an invite or to purchase access.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
