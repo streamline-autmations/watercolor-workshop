@@ -61,27 +61,37 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
     return <Navigate to="/login" replace />;
   }
 
-  // If there's an error checking access
+  // If there's an error checking access, treat it as no access
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-red-600">Unable to Access Course</CardTitle>
+            <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <CardTitle className="text-2xl font-bold">Course Access Required</CardTitle>
             <CardDescription>
-              We're having trouble checking your course access. Please try again.
+              You don't have access to this course yet. You may need an invite or to purchase access.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+          <CardContent className="space-y-4">
+            <Alert>
+              <AlertDescription>
+                If you have a course invite, please use the invite link to gain access.
+              </AlertDescription>
             </Alert>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="w-full mt-4"
-            >
-              Try Again
-            </Button>
+            <div className="flex space-x-2">
+              <Button 
+                onClick={() => window.history.back()} 
+                variant="outline" 
+                className="flex-1"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Go Back
+              </Button>
+              <Button onClick={() => window.location.href = '/explore'} className="flex-1">
+                Browse Courses
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
