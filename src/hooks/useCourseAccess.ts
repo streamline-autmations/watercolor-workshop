@@ -37,6 +37,21 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
+    // Special case: Admin users get access to all courses
+    const ADMIN_USER_IDS = [
+      '7778cc4f-d55b-43bc-9b2c-68c6d885bb74',
+      '25817216-e3ab-418a-903a-c1108f451f59'
+    ];
+    if (ADMIN_USER_IDS.includes(user.id)) {
+      console.log('👑 Admin user detected, granting access to course:', courseId);
+      setAccess({
+        hasAccess: true,
+        loading: false,
+        error: null
+      });
+      return;
+    }
+
     try {
       console.log('🔍 Checking access for course:', courseId, 'user:', user.id);
       
