@@ -37,6 +37,27 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
+    // Check database enrollment for Flower workshop (using UUID)
+    if (courseId === 'blom-flower-workshop') {
+      console.log('🌸 Checking Flower workshop enrollment for user:', user.id);
+      try {
+        const { data, error } = await supabase
+          .from('enrollments')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', '7c5276c1-9207-4653-89c3-bb4c675db5e2')
+          .single();
+        
+        if (!error && data) {
+          console.log('✅ User has Flower workshop enrollment');
+          setAccess({ hasAccess: true, loading: false, error: null });
+          return;
+        }
+      } catch (e) {
+        console.log('❌ No Flower workshop enrollment found');
+      }
+    }
+
     // Special case: Admin users get access to all courses
     const ADMIN_USER_IDS = [
       '7778cc4f-d55b-43bc-9b2c-68c6d885bb74',
