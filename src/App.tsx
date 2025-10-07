@@ -68,22 +68,7 @@ const AppRoutes = () => {
     );
   }
 
-  // User is logged in, but their profile is not complete.
-  // Only redirect to account setup if we're not loading AND we have confirmed the profile is incomplete
-  if (session && user && !loading && !isProfileComplete) {
-    console.log('⚠️ Session exists but profile incomplete, redirecting to account setup');
-    return (
-      <Routes>
-        <Route path="/account-setup" element={<SetupProfile />} />
-        <Route path="/accept-invite" element={<AcceptInvite />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="*" element={<Navigate to="/account-setup" replace />} />
-      </Routes>
-    );
-  }
-
-  // Fully authenticated and profile complete
+  // Fully authenticated - allow access even if profile incomplete
   console.log('✅ User fully authenticated, showing app');
   return (
     <AppShell>
@@ -102,9 +87,9 @@ const AppRoutes = () => {
         <Route path="/admin/invites" element={<AdminInvites />} />
         <Route path="/admin/access" element={<AdminAccess />} />
         <Route path="/course/:slug/certificate" element={<Certificate />} />
-        {/* Redirect authenticated users away from login and account setup */}
+        {/* Redirect authenticated users away from login */}
         <Route path="/login" element={<Navigate to="/home" replace />} />
-        <Route path="/account-setup" element={<Navigate to="/home" replace />} />
+        <Route path="/account-setup" element={<SetupProfile />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
