@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 100% 99%; /* #F8FBFF */
+    --foreground: 224 44% 11%; /* #0F172A */
+    --card: 0 0% 100%;
+    --card-foreground: 224 44% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 44% 11%;
+    
+    --primary: 210 100% 66%; /* Light Blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 213 100% 91%; /* #CEE5FF - User's Light Blue */
+    --secondary-foreground: 222 47% 11%;
+    
+    --accent: 340 100% 95%; /* Soft Pink BG */
+    --accent-foreground: 340 95% 70%; /* Strong Pink Text */
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 210 100% 66%; /* Light Blue */
+    --radius: 1rem;
+
+    /* Blom Light Vars */
+    --blom-ink: 227 15% 18%; /* #262b36 */
+    --blom-body: 223 15% 34%; /* #495065 */
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* Softer dark blue-gray */
+    --foreground: 210 40% 98%;
+    --card: 222 47% 14%; /* Slightly lighter than background */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 100% 66%;
+    --primary-foreground: 222 47% 11%; /* Dark text on light blue button */
+
+    --secondary: 217 30% 20%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 340 20% 14%;
+    --accent-foreground: 340 90% 75%;
+
+    --destructive: 0 63% 94%;
+    --destructive-foreground: 0 84% 60%;
+    --border: 217 30% 25%; /* A bit more visible border */
+    --input: 217 30% 25%;
+    --ring: 210 100% 66%;
+    
+    /* Blom Dark Vars - Improved Readability */
+    --blom-ink: 0 0% 98%; /* Almost white for headings */
+    --blom-body: 215 20% 88%; /* Much lighter gray for body text */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-body-text;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-ink font-semibold;
+  }
+}
+
+@layer components {
+  .bg-bloom {
+    background-image: linear-gradient(135deg,#dbeafe 0%,#e0e7ff 45%,#e0f2fe 100%);
+  }
+  .dark .bg-bloom {
+    background-image: linear-gradient(to bottom right, hsl(var(--card)), hsl(var(--background)));
+  }
+  .bg-login-button-grad {
+    background-image: linear-gradient(to right, #fca5a5, #ef4444);
+  }
+  .dark .bg-login-button-grad {
+    background-image: linear-gradient(to right, #ef4444, #b91c1c);
+  }
+  .dark .shadow-card {
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  }
+  .dark .shadow-card-hover {
+    box-shadow: 0 15px 35px rgba(0,0,0,.25);
+  }
+  
+  /* Fix for Safari compatibility warning from sonner library */
+  [data-sonner-toast][data-swiped=true] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
