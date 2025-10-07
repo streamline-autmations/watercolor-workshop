@@ -26,15 +26,25 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
-    // Special case: Grant access to Christmas course for all authenticated users
+    // Check database enrollment for Christmas workshop (using UUID)
     if (courseId === 'watercolour-christmas') {
-      console.log('🎄 Granting automatic access to Christmas course for user:', user.id);
-      setAccess({
-        hasAccess: true,
-        loading: false,
-        error: null
-      });
-      return;
+      console.log('🎄 Checking Christmas workshop enrollment for user:', user.id);
+      try {
+        const { data, error } = await supabase
+          .from('enrollments')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', 'efe16488-1de6-4522-aeb3-b08cfae3a640')
+          .single();
+        
+        if (!error && data) {
+          console.log('✅ User has Christmas workshop enrollment');
+          setAccess({ hasAccess: true, loading: false, error: null });
+          return;
+        }
+      } catch (e) {
+        console.log('❌ No Christmas workshop enrollment found');
+      }
     }
 
     // Check database enrollment for Flower workshop (using UUID)
