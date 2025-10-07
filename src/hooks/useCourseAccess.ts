@@ -26,6 +26,17 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
+    // Special case: Grant access to Christmas course for all authenticated users
+    if (courseId === 'watercolour-christmas') {
+      console.log('🎄 Granting automatic access to Christmas course for user:', user.id);
+      setAccess({
+        hasAccess: true,
+        loading: false,
+        error: null
+      });
+      return;
+    }
+
     // Special case: Admin users get access to all courses
     const ADMIN_USER_IDS = [
       '7778cc4f-d55b-43bc-9b2c-68c6d885bb74',
