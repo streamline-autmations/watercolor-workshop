@@ -182,9 +182,8 @@ export default function SetupProfile() {
       if (inviteToken) {
         navigate(`/accept-invite?invite=${inviteToken}`);
       } else {
-        // The onAuthStateChange listener in AuthContext will handle navigation.
-        // We just need to refresh the session to make sure the user object is up to date.
-        await supabase.auth.refreshSession();
+        // Redirect to home - the profile should now be complete
+        navigate('/home');
       }
 
     } catch (err: any) {
