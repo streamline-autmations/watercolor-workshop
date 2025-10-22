@@ -69,14 +69,14 @@ const AppRoutes = () => {
   }
 
   // Check if profile is complete
-  const isProfileComplete = user && (
-    user.first_name && 
-    user.last_name && 
-    user.username
+  const isProfileCompleteLocal = profile && (
+    profile.first_name && 
+    profile.last_name && 
+    profile.username
   );
 
   // If profile incomplete, redirect to setup
-  if (!isProfileComplete) {
+  if (!isProfileCompleteLocal) {
     console.log('⚠️ Profile incomplete, redirecting to setup');
     return (
       <Routes>
