@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
       
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile query timeout after 10 seconds')), 10000)
+        setTimeout(() => reject(new Error('Profile query timeout after 3 seconds')), 3000)
       );
       
       const { data: profileData, error: profileError } = await Promise.race([queryPromise, timeoutPromise]) as any;
@@ -128,19 +128,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(initialSession);
           setUser(initialSession.user);
           
-          // Fetch profile
-          console.log('👤 Fetching profile for user:', initialSession.user.id);
-          const profileData = await fetchUserProfile(initialSession.user.id);
-          console.log('👤 Profile data:', profileData);
-          
-          if (!mounted) return;
-          
-          if (profileData) {
-            setProfile(profileData);
-            setIsProfileComplete(!!profileData.first_name);
-            console.log('✅ Profile set, complete:', !!profileData.first_name);
-          } else {
-            console.log('⚠️ No profile data found');
+          // Try to fetch profile with fallback
+          try {
+            console.log('👤 Fetching profile for user:', initialSession.user.id);
+            const profileData = await fetchUserProfile(initialSession.user.id);
+            console.log('👤 Profile data:', profileData);
+            
+            if (!mounted) return;
+            
+            if (profileData) {
+              setProfile(profileData);
+              setIsProfileComplete(!!profileData.first_name);
+              console.log('✅ Profile set, complete:', !!profileData.first_name);
+            } else {
+              console.log('⚠️ No profile data found - user needs setup');
+              setProfile(null);
+              setIsProfileComplete(false);
+            }
+          } catch (profileError) {
+            console.log('⚠️ Profile fetch failed, continuing without profile:', profileError);
+            if (!mounted) return;
             setProfile(null);
             setIsProfileComplete(false);
           }
@@ -189,19 +196,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session.user);
         
-        // Fetch profile for new session
-        console.log('👤 Fetching profile for state change user:', session.user.id);
-        const profileData = await fetchUserProfile(session.user.id);
-        console.log('👤 Profile data from state change:', profileData);
-        
-        if (!mounted) return;
-        
-        if (profileData) {
-          setProfile(profileData);
-          setIsProfileComplete(!!profileData.first_name);
-          console.log('✅ Profile set from state change, complete:', !!profileData.first_name);
-        } else {
-          console.log('⚠️ No profile data from state change');
+        // Try to fetch profile for new session with fallback
+        try {
+          console.log('👤 Fetching profile for state change user:', session.user.id);
+          const profileData = await fetchUserProfile(session.user.id);
+          console.log('👤 Profile data from state change:', profileData);
+          
+          if (!mounted) return;
+          
+          if (profileData) {
+            setProfile(profileData);
+            setIsProfileComplete(!!profileData.first_name);
+            console.log('✅ Profile set from state change, complete:', !!profileData.first_name);
+          } else {
+            console.log('⚠️ No profile data from state change - user needs setup');
+            setProfile(null);
+            setIsProfileComplete(false);
+          }
+        } catch (profileError) {
+          console.log('⚠️ Profile fetch failed in state change, continuing without profile:', profileError);
+          if (!mounted) return;
           setProfile(null);
           setIsProfileComplete(false);
         }
