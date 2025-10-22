@@ -178,6 +178,9 @@ export default function SetupProfile() {
 
       toast.success('Account created successfully! Welcome.', { id: toastId });
       
+      // Refresh the session to get updated profile data
+      await supabase.auth.refreshSession();
+      
       // If they have an invite token, redirect to accept it
       if (inviteToken) {
         navigate(`/accept-invite?invite=${inviteToken}`);

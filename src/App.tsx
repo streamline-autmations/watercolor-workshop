@@ -82,7 +82,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/account-setup" element={<SetupProfile />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/account-setup" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
   }

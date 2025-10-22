@@ -79,7 +79,7 @@ const Login = () => {
             theme="light"
             view={mode === 'signup' ? 'sign_up' : 'sign_in'}
             showLinks={true}
-            redirectTo={inviteToken ? `${window.location.origin}/accept-invite?invite=${inviteToken}` : `${window.location.origin}/home`}
+            redirectTo={inviteToken ? `${window.location.origin}/accept-invite?invite=${inviteToken}` : `${window.location.origin}/account-setup`}
             localization={{
               variables: {
                 sign_in: {
