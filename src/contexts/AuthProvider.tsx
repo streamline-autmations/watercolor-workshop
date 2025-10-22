@@ -75,20 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('❌ Profile query failed with error:', profileError);
         
         if (profileError.code === 'PGRST116') {
-          console.log('👤 Profile doesn\'t exist, creating new one...');
-          // Profile doesn't exist, create it
-          const { error: upsertError } = await supabase
-            .from('profiles')
-            .upsert({ user_id: userId, role: 'student' }, { onConflict: 'user_id' });
-          
-          if (upsertError) {
-            console.error('❌ Profile upsert error:', upsertError);
-            return null;
-          }
-          
-          console.log('✅ Profile created successfully');
-          // Return basic profile
-          return { user_id: userId, first_name: null, last_name: null, username: null, avatar_url: null };
+          console.log('👤 Profile doesn\'t exist - user needs to complete setup');
+          // Don't auto-create profile - let them go through proper signup flow
+          return null;
         }
         
         console.error('❌ Profile fetch error (not PGRST116):', profileError);

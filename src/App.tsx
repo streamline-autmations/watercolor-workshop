@@ -68,8 +68,26 @@ const AppRoutes = () => {
     );
   }
 
-  // Fully authenticated - allow access even if profile incomplete
-  console.log('✅ User fully authenticated, showing app');
+  // Check if profile is complete
+  const isProfileComplete = user && (
+    user.first_name && 
+    user.last_name && 
+    user.username
+  );
+
+  // If profile incomplete, redirect to setup
+  if (!isProfileComplete) {
+    console.log('⚠️ Profile incomplete, redirecting to setup');
+    return (
+      <Routes>
+        <Route path="/account-setup" element={<SetupProfile />} />
+        <Route path="*" element={<Navigate to="/account-setup" replace />} />
+      </Routes>
+    );
+  }
+
+  // Fully authenticated with complete profile
+  console.log('✅ User fully authenticated with complete profile, showing app');
   return (
     <AppShell>
       <Routes>

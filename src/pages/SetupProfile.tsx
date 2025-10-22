@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -70,6 +70,8 @@ export default function SetupProfile() {
   const [msg, setMsg] = useState("Setting up your account...");
   const [isAuthCallback, setIsAuthCallback] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite');
 
   const form = useForm<SetupProfileFormValues>({
     resolver: zodResolver(setupProfileSchema),
@@ -176,9 +178,14 @@ export default function SetupProfile() {
 
       toast.success('Account created successfully! Welcome.', { id: toastId });
       
-      // The onAuthStateChange listener in AuthContext will handle navigation.
-      // We just need to refresh the session to make sure the user object is up to date.
-      await supabase.auth.refreshSession();
+      // If they have an invite token, redirect to accept it
+      if (inviteToken) {
+        navigate(`/accept-invite?invite=${inviteToken}`);
+      } else {
+        // The onAuthStateChange listener in AuthContext will handle navigation.
+        // We just need to refresh the session to make sure the user object is up to date.
+        await supabase.auth.refreshSession();
+      }
 
     } catch (err: any) {
       const errorMessage = err.details || err.message || 'An unknown error occurred.';

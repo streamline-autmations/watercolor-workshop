@@ -1,5 +1,5 @@
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Auth } from '@supabase/auth-ui-react';
@@ -12,6 +12,9 @@ const Login = () => {
   const isMobile = useIsMobile();
   const heroImage = isMobile ? '/hero-mobile-3.webp' : '/hero-desktop-3.webp';
   const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite');
+  const mode = searchParams.get('mode');
 
   const { session, loading } = useAuth();
 
@@ -31,6 +34,10 @@ const Login = () => {
   }
 
   if (session) {
+    // If they have an invite token, redirect to accept it
+    if (inviteToken) {
+      return <Navigate to={`/accept-invite?invite=${inviteToken}`} replace />;
+    }
     return <Navigate to="/home" replace />;
   }
 
@@ -69,9 +76,9 @@ const Login = () => {
             }}
             providers={[]}
             theme="light"
-            view="sign_in"
-            showLinks={false}
-            redirectTo={`${window.location.origin}/account-setup`}
+            view={mode === 'signup' ? 'sign_up' : 'sign_in'}
+            showLinks={true}
+            redirectTo={inviteToken ? `${window.location.origin}/accept-invite?invite=${inviteToken}` : `${window.location.origin}/home`}
             localization={{
               variables: {
                 sign_in: {

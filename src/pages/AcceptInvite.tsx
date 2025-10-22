@@ -94,7 +94,13 @@ export default function AcceptInvite() {
   };
 
   const handleLogin = () => {
-    navigate('/login');
+    // Redirect to login page with invite token preserved
+    navigate(`/login?invite=${inviteToken}`);
+  };
+
+  const handleSignUp = () => {
+    // Redirect to signup page with invite token preserved  
+    navigate(`/login?invite=${inviteToken}&mode=signup`);
   };
 
   const handleRetry = () => {
@@ -127,12 +133,17 @@ export default function AcceptInvite() {
             <div className="space-y-4">
               <Alert>
                 <AlertDescription>
-                  You need to be logged in to accept this course invite.
+                  You need to create an account to accept this course invite.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handleLogin} className="w-full">
-                Log In
-              </Button>
+              <div className="space-y-2">
+                <Button onClick={handleSignUp} className="w-full">
+                  Create Account
+                </Button>
+                <Button onClick={handleLogin} variant="outline" className="w-full">
+                  Already have an account? Log In
+                </Button>
+              </div>
             </div>
           )}
 
