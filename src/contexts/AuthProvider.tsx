@@ -101,6 +101,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('🔐 Initializing auth...');
       setLoading(true); // Ensure loading is true at start
       
+      // Set a timeout to ensure loading gets set to false
+      const loadingTimeout = setTimeout(() => {
+        console.log('⏰ Loading timeout reached, forcing loading to false');
+        setLoading(false);
+      }, 5000); // 5 second timeout
+      
       try {
         // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
@@ -154,10 +160,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setIsProfileComplete(false);
         }
       } finally {
-        if (mounted) {
-          console.log('🏁 Auth initialization complete, setting loading to false');
-          setLoading(false);
-        }
+        clearTimeout(loadingTimeout);
+        console.log('🏁 Auth initialization complete, setting loading to false');
+        setLoading(false);
       }
     };
 
