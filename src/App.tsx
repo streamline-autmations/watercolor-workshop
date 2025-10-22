@@ -24,11 +24,11 @@ import AdminInvites from "./pages/AdminInvites";
 import AdminAccess from "./pages/AdminAccess";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CourseProtectedRoute } from "./components/CourseProtectedRoute";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const AppRoutes = () => {
   const { session, loading, isProfileComplete, user, profile } = useAuth();
-  // Debug: Force update to trigger deployment
-
+  
   // Debug logging
   console.log('🎯 AppRoutes state:', { 
     loading, 
@@ -45,8 +45,9 @@ const AppRoutes = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom">
         <div className="text-center">
-          <Skeleton className="h-20 w-20 rounded-full mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-body-text">Loading...</p>
+          <p className="text-sm text-gray-500 mt-2">Initializing application...</p>
         </div>
       </div>
     );
@@ -119,7 +120,7 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <>
+  <ErrorBoundary>
     <Sonner richColors />
     <BrowserRouter>
       <AuthProvider>
@@ -127,7 +128,7 @@ const App = () => (
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
-  </>
+  </ErrorBoundary>
 );
 
 export default App;

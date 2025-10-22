@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const loadingTimeout = setTimeout(() => {
         console.log('⏰ Loading timeout reached, forcing loading to false');
         setLoading(false);
-      }, 5000); // 5 second timeout
+      }, 3000); // Reduced to 3 seconds
       
       try {
         // Get initial session
@@ -153,6 +153,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('❌ Error initializing auth:', error);
+        console.error('❌ Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : 'No stack'
+        });
         if (mounted) {
           setSession(null);
           setUser(null);
