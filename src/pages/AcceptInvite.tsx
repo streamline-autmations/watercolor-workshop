@@ -11,7 +11,7 @@ export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, session, loading } = useAuth();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting'>('waiting');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting' | 'ready'>('waiting');
   const [message, setMessage] = useState('');
   const [courseId, setCourseId] = useState<string | null>(null);
 
@@ -36,8 +36,9 @@ export default function AcceptInvite() {
       return;
     }
 
-    // User is logged in, process the invite
-    processInvite(inviteToken);
+    // User is logged in, but don't auto-process - let them see the invite first
+    setStatus('ready');
+    setMessage('You are logged in. Click below to accept this course invite.');
   }, [inviteToken, session, user, loading]);
 
   const processInvite = async (token: string) => {
@@ -144,6 +145,19 @@ export default function AcceptInvite() {
                   Already have an account? Log In
                 </Button>
               </div>
+            </div>
+          )}
+
+          {status === 'ready' && (
+            <div className="space-y-4">
+              <Alert>
+                <AlertDescription>
+                  {message}
+                </AlertDescription>
+              </Alert>
+              <Button onClick={() => processInvite(inviteToken!)} className="w-full">
+                Accept Course Invite
+              </Button>
             </div>
           )}
 
