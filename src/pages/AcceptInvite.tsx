@@ -18,19 +18,30 @@ export default function AcceptInvite() {
   const inviteToken = searchParams.get('invite');
 
   useEffect(() => {
+    console.log('🎫 AcceptInvite useEffect triggered:', {
+      inviteToken,
+      hasSession: !!session,
+      hasUser: !!user,
+      loading,
+      currentUrl: window.location.href
+    });
+
     if (!inviteToken) {
+      console.log('❌ No invite token found');
       setStatus('error');
       setMessage('No invite token provided. Please check your invite link.');
       return;
     }
 
     if (loading) {
+      console.log('⏳ Still loading auth state');
       setStatus('loading');
       setMessage('Loading...');
       return;
     }
 
     if (!session || !user) {
+      console.log('👤 User not logged in, showing signup options');
       setStatus('waiting');
       setMessage('Please create an account to accept this invite.');
       return;
