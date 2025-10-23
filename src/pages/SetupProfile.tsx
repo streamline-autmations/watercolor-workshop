@@ -73,6 +73,14 @@ export default function SetupProfile() {
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get('invite');
 
+  // If no invite token, redirect to login
+  useEffect(() => {
+    if (!inviteToken) {
+      console.log('🚫 No invite token found, redirecting to login');
+      navigate('/login');
+    }
+  }, [inviteToken, navigate]);
+
   const form = useForm<SetupProfileFormValues>({
     resolver: zodResolver(setupProfileSchema),
     defaultValues: { firstName: '', lastName: '', phone: '+27 ', password: '', confirmPassword: '', terms: false },
