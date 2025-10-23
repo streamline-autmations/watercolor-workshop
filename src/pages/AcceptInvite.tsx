@@ -32,14 +32,14 @@ export default function AcceptInvite() {
 
     if (!session || !user) {
       setStatus('waiting');
-      setMessage('Please log in to accept this invite.');
+      setMessage('Please create an account to accept this invite.');
       return;
     }
 
-    // User is logged in - automatically process the invite
-    // This handles the case where logged-in users click invite links
-    console.log('🎫 User is logged in, processing invite automatically');
-    processInvite(inviteToken);
+    // User is logged in - redirect to account setup to complete profile
+    // This ensures invite users go through account setup flow
+    console.log('🎫 User is logged in, redirecting to account setup');
+    navigate(`/account-setup?invite=${inviteToken}`);
   }, [inviteToken, session, user, loading]);
 
   const processInvite = async (token: string) => {
@@ -135,12 +135,12 @@ export default function AcceptInvite() {
             <div className="space-y-4">
               <Alert>
                 <AlertDescription>
-                  You need to create an account to accept this course invite.
+                  You've been invited to join a course! Create an account to get started.
                 </AlertDescription>
               </Alert>
               <div className="space-y-2">
                 <Button onClick={handleSignUp} className="w-full">
-                  Create Account
+                  Create Account & Join Course
                 </Button>
                 <Button onClick={handleLogin} variant="outline" className="w-full">
                   Already have an account? Log In
