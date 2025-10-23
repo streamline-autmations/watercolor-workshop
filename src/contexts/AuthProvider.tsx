@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
+  const [profileFetchFailed, setProfileFetchFailed] = useState(false);
 
   // Clean sign out function - only clears auth, not all storage
   const signOut = useCallback(async () => {
@@ -43,24 +44,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Fetch user profile
+  // Fetch user profile with timeout and better error handling
   const fetchUserProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     console.log('🔍 Fetching profile for userId:', userId);
+    
     try {
-      console.log('📡 Making Supabase query to profiles table...');
+      console.log('⚙️ Making Supabase query to profiles table...');
       
-      // Add timeout to detect hanging queries
+      // Create a timeout promise with shorter timeout
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Profile query timeout after 2 seconds')), 2000);
+      });
+      
+      // Create the query promise with explicit timeout
       const queryPromise = supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .single()
+        .abortSignal(AbortSignal.timeout(2000)); // Additional timeout
       
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile query timeout after 3 seconds')), 3000)
-      );
-      
-      const { data: profileData, error: profileError } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      // Race between query and timeout
+      const { data: profileData, error: profileError } = await Promise.race([
+        queryPromise,
+        timeoutPromise
+      ]);
 
       console.log('📊 Profile query result:', { 
         hasData: !!profileData, 
@@ -76,7 +84,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (profileError.code === 'PGRST116') {
           console.log('👤 Profile doesn\'t exist - user needs to complete setup');
-          // Don't auto-create profile - let them go through proper signup flow
           return null;
         }
         
@@ -89,6 +96,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('❌ Unexpected error fetching profile:', error);
       console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
+      
+      // If it's a timeout error, return null to continue without profile
+      if (error instanceof Error && error.message.includes('timeout')) {
+        console.log('⏰ Profile query timed out, continuing without profile');
+        return null;
+      }
+      
       return null;
     }
   }, []);
@@ -128,25 +142,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(initialSession);
           setUser(initialSession.user);
           
-          // Try to fetch profile with fallback
-          try {
-            console.log('👤 Fetching profile for user:', initialSession.user.id);
-            const profileData = await fetchUserProfile(initialSession.user.id);
-            console.log('👤 Profile data:', profileData);
-            
-            if (!mounted) return;
-            
-            if (profileData) {
-              setProfile(profileData);
-              setIsProfileComplete(!!profileData.first_name);
-              console.log('✅ Profile set, complete:', !!profileData.first_name);
-            } else {
-              console.log('⚠️ No profile data found - user needs setup');
+          // Try to fetch profile with fallback (skip if already failed)
+          if (!profileFetchFailed) {
+            try {
+              console.log('👤 Fetching profile for user:', initialSession.user.id);
+              const profileData = await fetchUserProfile(initialSession.user.id);
+              console.log('👤 Profile data:', profileData);
+              
+              if (!mounted) return;
+              
+              if (profileData) {
+                setProfile(profileData);
+                setIsProfileComplete(!!profileData.first_name);
+                console.log('✅ Profile set, complete:', !!profileData.first_name);
+              } else {
+                console.log('⚠️ No profile data found - user needs setup');
+                setProfile(null);
+                setIsProfileComplete(false);
+              }
+            } catch (profileError) {
+              console.log('⚠️ Profile fetch failed, marking as failed and continuing:', profileError);
+              if (!mounted) return;
+              setProfileFetchFailed(true);
               setProfile(null);
               setIsProfileComplete(false);
             }
-          } catch (profileError) {
-            console.log('⚠️ Profile fetch failed, continuing without profile:', profileError);
+          } else {
+            console.log('⏭️ Skipping profile fetch - previously failed');
             if (!mounted) return;
             setProfile(null);
             setIsProfileComplete(false);
@@ -196,25 +218,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session.user);
         
-        // Try to fetch profile for new session with fallback
-        try {
-          console.log('👤 Fetching profile for state change user:', session.user.id);
-          const profileData = await fetchUserProfile(session.user.id);
-          console.log('👤 Profile data from state change:', profileData);
-          
-          if (!mounted) return;
-          
-          if (profileData) {
-            setProfile(profileData);
-            setIsProfileComplete(!!profileData.first_name);
-            console.log('✅ Profile set from state change, complete:', !!profileData.first_name);
-          } else {
-            console.log('⚠️ No profile data from state change - user needs setup');
+        // Try to fetch profile for new session with fallback (skip if already failed)
+        if (!profileFetchFailed) {
+          try {
+            console.log('👤 Fetching profile for state change user:', session.user.id);
+            const profileData = await fetchUserProfile(session.user.id);
+            console.log('👤 Profile data from state change:', profileData);
+            
+            if (!mounted) return;
+            
+            if (profileData) {
+              setProfile(profileData);
+              setIsProfileComplete(!!profileData.first_name);
+              console.log('✅ Profile set from state change, complete:', !!profileData.first_name);
+            } else {
+              console.log('⚠️ No profile data from state change - user needs setup');
+              setProfile(null);
+              setIsProfileComplete(false);
+            }
+          } catch (profileError) {
+            console.log('⚠️ Profile fetch failed in state change, marking as failed:', profileError);
+            if (!mounted) return;
+            setProfileFetchFailed(true);
             setProfile(null);
             setIsProfileComplete(false);
           }
-        } catch (profileError) {
-          console.log('⚠️ Profile fetch failed in state change, continuing without profile:', profileError);
+        } else {
+          console.log('⏭️ Skipping profile fetch in state change - previously failed');
           if (!mounted) return;
           setProfile(null);
           setIsProfileComplete(false);
