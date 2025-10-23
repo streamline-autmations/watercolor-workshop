@@ -132,8 +132,8 @@ export default function AcceptInvite() {
   };
 
   const handleSignUp = () => {
-    // Redirect to signup page with invite token preserved  
-    navigate(`/login?invite=${inviteToken}&mode=signup`);
+    // Redirect to account setup page with invite token preserved  
+    navigate(`/account-setup?invite=${inviteToken}`);
   };
 
   const handleRetry = () => {
