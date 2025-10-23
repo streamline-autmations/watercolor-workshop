@@ -77,11 +77,19 @@ export default function SetupProfile() {
 
   // If no invite token, redirect to login
   useEffect(() => {
+    console.log('🔍 SetupProfile useEffect:', {
+      inviteToken,
+      currentUrl: window.location.href,
+      searchParams: Object.fromEntries(searchParams.entries()),
+      hasUser: !!user,
+      hasSession: !!session
+    });
+    
     if (!inviteToken) {
       console.log('🚫 No invite token found, redirecting to login');
       navigate('/login');
     }
-  }, [inviteToken, navigate]);
+  }, [inviteToken, navigate, searchParams, user, session]);
 
   // For invite users, we don't need to be authenticated yet
   // They'll authenticate during the signup process
