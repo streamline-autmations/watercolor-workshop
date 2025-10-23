@@ -29,6 +29,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
   const [profileFetchFailed, setProfileFetchFailed] = useState(false);
+  const profileFetchFailedRef = useRef(false);
+  
+  // Emergency fallback - disable profile fetching entirely if it keeps failing
+  const DISABLE_PROFILE_FETCH = true; // Set to true to completely skip profile fetching
 
   // Clean sign out function - only clears auth, not all storage
   const signOut = useCallback(async () => {
@@ -142,8 +146,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(initialSession);
           setUser(initialSession.user);
           
-          // Try to fetch profile with fallback (skip if already failed)
-          if (!profileFetchFailed) {
+          // Try to fetch profile with fallback (skip if already failed or disabled)
+          if (!DISABLE_PROFILE_FETCH && !profileFetchFailedRef.current) {
             try {
               console.log('👤 Fetching profile for user:', initialSession.user.id);
               const profileData = await fetchUserProfile(initialSession.user.id);
@@ -163,12 +167,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } catch (profileError) {
               console.log('⚠️ Profile fetch failed, marking as failed and continuing:', profileError);
               if (!mounted) return;
+              profileFetchFailedRef.current = true;
               setProfileFetchFailed(true);
               setProfile(null);
               setIsProfileComplete(false);
             }
           } else {
-            console.log('⏭️ Skipping profile fetch - previously failed');
+            console.log('⏭️ Skipping profile fetch - disabled or previously failed');
             if (!mounted) return;
             setProfile(null);
             setIsProfileComplete(false);
@@ -218,8 +223,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session.user);
         
-        // Try to fetch profile for new session with fallback (skip if already failed)
-        if (!profileFetchFailed) {
+        // Try to fetch profile for new session with fallback (skip if already failed or disabled)
+        if (!DISABLE_PROFILE_FETCH && !profileFetchFailedRef.current) {
           try {
             console.log('👤 Fetching profile for state change user:', session.user.id);
             const profileData = await fetchUserProfile(session.user.id);
@@ -239,12 +244,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } catch (profileError) {
             console.log('⚠️ Profile fetch failed in state change, marking as failed:', profileError);
             if (!mounted) return;
+            profileFetchFailedRef.current = true;
             setProfileFetchFailed(true);
             setProfile(null);
             setIsProfileComplete(false);
           }
         } else {
-          console.log('⏭️ Skipping profile fetch in state change - previously failed');
+          console.log('⏭️ Skipping profile fetch in state change - disabled or previously failed');
           if (!mounted) return;
           setProfile(null);
           setIsProfileComplete(false);
