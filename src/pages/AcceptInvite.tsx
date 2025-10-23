@@ -15,19 +15,35 @@ export default function AcceptInvite() {
   const [message, setMessage] = useState('');
   const [courseId, setCourseId] = useState<string | null>(null);
 
-  const inviteToken = searchParams.get('invite');
+  // Parse invite token from both query params and hash fragments
+  const inviteTokenFromParams = searchParams.get('invite');
+  const inviteTokenFromHash = window.location.hash.includes('invite=') 
+    ? new URLSearchParams(window.location.hash.substring(1)).get('invite')
+    : null;
+  const inviteToken = inviteTokenFromParams || inviteTokenFromHash;
 
   useEffect(() => {
     console.log('🎫 AcceptInvite useEffect triggered:', {
       inviteToken,
+      inviteTokenFromParams,
+      inviteTokenFromHash,
       hasSession: !!session,
       hasUser: !!user,
       loading,
-      currentUrl: window.location.href
+      currentUrl: window.location.href,
+      hash: window.location.hash,
+      search: window.location.search
     });
 
     if (!inviteToken) {
-      console.log('❌ No invite token found');
+      console.log('❌ No invite token found in URL');
+      console.log('🔍 URL analysis:', {
+        fullUrl: window.location.href,
+        pathname: window.location.pathname,
+        search: window.location.search,
+        hash: window.location.hash,
+        searchParams: Object.fromEntries(searchParams.entries())
+      });
       setStatus('error');
       setMessage('No invite token provided. Please check your invite link.');
       return;
