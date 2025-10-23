@@ -34,9 +34,9 @@ const Login = () => {
   }
 
   if (session) {
-    // If they have an invite token, redirect to accept it
+    // If they have an invite token, redirect to account setup to process it
     if (inviteToken) {
-      return <Navigate to={`/accept-invite?invite=${inviteToken}`} replace />;
+      return <Navigate to={`/account-setup?invite=${inviteToken}`} replace />;
     }
     // Redirect to home - let App.tsx handle profile completion check
     return <Navigate to="/home" replace />;
