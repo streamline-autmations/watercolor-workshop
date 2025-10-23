@@ -78,7 +78,7 @@ const Login = () => {
             providers={[]}
             theme="light"
             view={mode === 'signup' ? 'sign_up' : 'sign_in'}
-            showLinks={true}
+            showLinks={false}
             redirectTo={inviteToken ? `${window.location.origin}/accept-invite?invite=${inviteToken}` : `${window.location.origin}/account-setup`}
             localization={{
               variables: {
