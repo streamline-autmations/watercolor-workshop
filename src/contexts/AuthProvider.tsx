@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const profileFetchFailedRef = useRef(false);
   
   // Emergency fallback - disable profile fetching entirely if it keeps failing
-  const DISABLE_PROFILE_FETCH = true; // Set to true to completely skip profile fetching
+  const DISABLE_PROFILE_FETCH = false; // Set to true to completely skip profile fetching
 
   // Clean sign out function - only clears auth, not all storage
   const signOut = useCallback(async () => {
