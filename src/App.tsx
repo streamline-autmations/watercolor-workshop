@@ -76,6 +76,15 @@ const AppRoutes = () => {
     profile.username
   );
 
+  // Debug profile completion
+  console.log('🔍 Profile completion check:', {
+    hasProfile: !!profile,
+    first_name: profile?.first_name,
+    last_name: profile?.last_name,
+    username: profile?.username,
+    isComplete: isProfileCompleteLocal
+  });
+
   // If profile incomplete, redirect to setup
   if (!isProfileCompleteLocal) {
     console.log('⚠️ Profile incomplete, redirecting to setup');

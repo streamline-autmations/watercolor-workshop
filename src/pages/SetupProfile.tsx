@@ -198,7 +198,25 @@ export default function SetupProfile() {
       await supabase.auth.refreshSession();
       
       // Wait a moment for the profile to be updated
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Verify the profile was saved correctly
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single();
+        
+        console.log('🔍 Profile after save:', profileData);
+        console.log('🔍 Profile complete check:', {
+          first_name: profileData?.first_name,
+          last_name: profileData?.last_name,
+          username: profileData?.username,
+          isComplete: !!(profileData?.first_name && profileData?.last_name && profileData?.username)
+        });
+      }
       
       // If they have an invite token, redirect to accept it
       if (inviteToken) {
