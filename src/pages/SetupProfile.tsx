@@ -176,17 +176,21 @@ export default function SetupProfile() {
       }
 
       // Update the profile directly in the database
+      const profileData = {
+        user_id: user.id,
+        first_name: values.firstName,
+        last_name: values.lastName,
+        username: values.firstName.toLowerCase() + values.lastName.toLowerCase(),
+        phone: values.phone,
+        role: 'student',
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('💾 Saving profile data:', profileData);
+      
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          first_name: values.firstName,
-          last_name: values.lastName,
-          username: values.firstName.toLowerCase() + values.lastName.toLowerCase(),
-          phone: values.phone,
-          role: 'student',
-          updated_at: new Date().toISOString()
-        });
+        .upsert(profileData);
 
       if (profileError) {
         throw new Error('Failed to update profile: ' + profileError.message);
