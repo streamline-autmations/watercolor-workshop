@@ -47,10 +47,10 @@ export default function AcceptInvite() {
       return;
     }
 
-    // User is logged in - redirect to account setup to complete profile
-    // This ensures invite users go through account setup flow
-    console.log('🎫 User is logged in, redirecting to account setup');
-    navigate(`/account-setup?invite=${inviteToken}`);
+    // User is logged in - process the invite directly
+    // This handles the case where logged-in users click invite links
+    console.log('🎫 User is logged in, processing invite automatically');
+    processInvite(inviteToken);
   }, [inviteToken, session, user, loading]);
 
   const processInvite = async (token: string) => {

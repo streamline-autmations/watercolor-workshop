@@ -169,17 +169,36 @@ export default function SetupProfile() {
     const toastId = toast.loading('Setting up your account...');
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('setup-user', {
-        body: { ...values },
-      });
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('No authenticated user found');
+      }
 
-      if (functionError) throw functionError;
-      if (data.error) throw new Error(data.error.message);
+      // Update the profile directly in the database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          username: values.firstName.toLowerCase() + values.lastName.toLowerCase(),
+          phone: values.phone,
+          role: 'student',
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        throw new Error('Failed to update profile: ' + profileError.message);
+      }
 
       toast.success('Account created successfully! Welcome.', { id: toastId });
       
       // Refresh the session to get updated profile data
       await supabase.auth.refreshSession();
+      
+      // Wait a moment for the profile to be updated
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // If they have an invite token, redirect to accept it
       if (inviteToken) {
