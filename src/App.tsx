@@ -1,5 +1,6 @@
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 import { AppShell } from "./components/AppShell";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -28,6 +29,27 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const AppRoutes = () => {
   const { session, loading, isProfileComplete, user, profile } = useAuth();
+  
+  // Handle malformed invite URLs that go to root with hash
+  useEffect(() => {
+    const currentUrl = window.location.href;
+    const hash = window.location.hash;
+    
+    // If URL is root with hash, check if it contains invite token
+    if (window.location.pathname === '/' && hash) {
+      console.log('🔍 Detected root URL with hash:', { currentUrl, hash });
+      
+      // Check if hash contains invite token
+      if (hash.includes('invite=')) {
+        const inviteToken = new URLSearchParams(hash.substring(1)).get('invite');
+        if (inviteToken) {
+          console.log('🎫 Found invite token in hash, redirecting to AcceptInvite page');
+          window.location.replace(`/accept-invite?invite=${inviteToken}`);
+          return;
+        }
+      }
+    }
+  }, []);
   
   // Debug logging
   console.log('🎯 AppRoutes state:', { 
