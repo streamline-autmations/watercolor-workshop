@@ -36,10 +36,10 @@ export default function AcceptInvite() {
       return;
     }
 
-    // User is logged in - check if they need to accept the invite
-    // Even if they have a profile, they might need to accept this specific invite
-    setStatus('ready');
-    setMessage('You are logged in. Click below to accept this course invite.');
+    // User is logged in - automatically process the invite
+    // This handles the case where logged-in users click invite links
+    console.log('🎫 User is logged in, processing invite automatically');
+    processInvite(inviteToken);
   }, [inviteToken, session, user, loading]);
 
   const processInvite = async (token: string) => {
