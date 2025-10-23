@@ -36,7 +36,8 @@ export default function AcceptInvite() {
       return;
     }
 
-    // User is logged in, but don't auto-process - let them see the invite first
+    // User is logged in - check if they need to accept the invite
+    // Even if they have a profile, they might need to accept this specific invite
     setStatus('ready');
     setMessage('You are logged in. Click below to accept this course invite.');
   }, [inviteToken, session, user, loading]);

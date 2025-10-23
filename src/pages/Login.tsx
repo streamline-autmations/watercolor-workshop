@@ -38,7 +38,7 @@ const Login = () => {
     if (inviteToken) {
       return <Navigate to={`/accept-invite?invite=${inviteToken}`} replace />;
     }
-    // Always redirect to home - let App.tsx handle profile completion check
+    // Redirect to home - let App.tsx handle profile completion check
     return <Navigate to="/home" replace />;
   }
 
