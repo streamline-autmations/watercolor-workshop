@@ -21,6 +21,10 @@ export default function AcceptInvite() {
     ? new URLSearchParams(window.location.hash.substring(1)).get('invite')
     : null;
   const inviteToken = inviteTokenFromParams || inviteTokenFromHash;
+  
+  // Also check for Supabase confirmation URLs that might contain invite info
+  const confirmationUrl = searchParams.get('confirmation_url');
+  const tokenHash = searchParams.get('token_hash');
 
   useEffect(() => {
     console.log('🎫 AcceptInvite useEffect triggered:', {
