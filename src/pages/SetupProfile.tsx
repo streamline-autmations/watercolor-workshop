@@ -221,7 +221,7 @@ export default function SetupProfile() {
       console.log('✅ Profile saved successfully');
 
       // Wait a moment for the database to update
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Verify the profile was saved correctly
       console.log('🔍 Verifying profile was saved...');
@@ -252,7 +252,7 @@ export default function SetupProfile() {
       }
       
       // Wait for the auth state to update
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // If they have an invite token, redirect to accept it
       if (inviteToken) {

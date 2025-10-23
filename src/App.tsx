@@ -45,9 +45,8 @@ const AppRoutes = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-body-text">Loading...</p>
-          <p className="text-sm text-gray-500 mt-2">Initializing application...</p>
         </div>
       </div>
     );

@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Emergency fallback - disable profile fetching entirely if it keeps failing
   const DISABLE_PROFILE_FETCH = false; // Set to true to completely skip profile fetching
   
-  // Temporary fix - increase timeout for profile queries
-  const PROFILE_QUERY_TIMEOUT = 10000; // 10 seconds instead of 2
+  // Optimized timeout for profile queries
+  const PROFILE_QUERY_TIMEOUT = 5000; // 5 seconds - balanced for speed and reliability
 
   // Clean sign out function - only clears auth, not all storage
   const signOut = useCallback(async () => {
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const loadingTimeout = setTimeout(() => {
         console.log('⏰ Loading timeout reached, forcing loading to false');
         setLoading(false);
-      }, 3000); // Reduced to 3 seconds
+      }, 2000); // Reduced to 2 seconds for faster loading
       
       try {
         // Get initial session
