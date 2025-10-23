@@ -85,8 +85,24 @@ const AppRoutes = () => {
     isComplete: isProfileCompleteLocal
   });
 
+  // Emergency fallback: If user has any profile data, consider them complete
+  // This prevents existing users from being stuck in account setup loop
+  const hasAnyProfileData = profile && (
+    profile.first_name || 
+    profile.last_name || 
+    profile.username
+  );
+  
+  const shouldShowApp = isProfileCompleteLocal || hasAnyProfileData;
+  
+  console.log('🚨 Emergency fallback check:', {
+    hasAnyProfileData,
+    shouldShowApp,
+    originalComplete: isProfileCompleteLocal
+  });
+
   // If profile incomplete, redirect to setup
-  if (!isProfileCompleteLocal) {
+  if (!shouldShowApp) {
     console.log('⚠️ Profile incomplete, redirecting to setup');
     return (
       <Routes>

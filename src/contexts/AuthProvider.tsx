@@ -33,6 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   // Emergency fallback - disable profile fetching entirely if it keeps failing
   const DISABLE_PROFILE_FETCH = false; // Set to true to completely skip profile fetching
+  
+  // Temporary fix - increase timeout for profile queries
+  const PROFILE_QUERY_TIMEOUT = 10000; // 10 seconds instead of 2
 
   // Clean sign out function - only clears auth, not all storage
   const signOut = useCallback(async () => {
@@ -55,9 +58,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('⚙️ Making Supabase query to profiles table...');
       
-      // Create a timeout promise with shorter timeout
+      // Create a timeout promise with longer timeout
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Profile query timeout after 2 seconds')), 2000);
+        setTimeout(() => reject(new Error(`Profile query timeout after ${PROFILE_QUERY_TIMEOUT/1000} seconds`)), PROFILE_QUERY_TIMEOUT);
       });
       
       // Create the query promise with explicit timeout
@@ -66,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .select('*')
         .eq('user_id', userId)
         .single()
-        .abortSignal(AbortSignal.timeout(2000)); // Additional timeout
+        .abortSignal(AbortSignal.timeout(PROFILE_QUERY_TIMEOUT)); // Longer timeout
       
       // Race between query and timeout
       const { data: profileData, error: profileError } = await Promise.race([
