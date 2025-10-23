@@ -25,6 +25,7 @@ const passwordSchema = z.string()
 const setupProfileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
   lastName: z.string().min(1, 'Last name is required.'),
+  email: z.string().email('Please enter a valid email address.'),
   phone: z.string().min(7, 'A valid phone number is required.').regex(/^\+?[0-9 ]{7,20}$/, 'Use international format (e.g., +27 82 123 4567)'),
   password: passwordSchema,
   confirmPassword: z.string(),
@@ -72,6 +73,7 @@ export default function SetupProfile() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get('invite');
+  const { user, session } = useAuth();
 
   // If no invite token, redirect to login
   useEffect(() => {
@@ -81,9 +83,13 @@ export default function SetupProfile() {
     }
   }, [inviteToken, navigate]);
 
+  // For invite users, we don't need to be authenticated yet
+  // They'll authenticate during the signup process
+  const isInviteUser = !!inviteToken;
+
   const form = useForm<SetupProfileFormValues>({
     resolver: zodResolver(setupProfileSchema),
-    defaultValues: { firstName: '', lastName: '', phone: '+27 ', password: '', confirmPassword: '', terms: false },
+    defaultValues: { firstName: '', lastName: '', email: '', phone: '+27 ', password: '', confirmPassword: '', terms: false },
   });
 
   const password = form.watch('password');
@@ -179,19 +185,49 @@ export default function SetupProfile() {
     try {
       console.log('🚀 Starting account setup process...');
       console.log('📝 Form values:', values);
+      console.log('🎫 Invite token:', inviteToken);
+      console.log('👤 Is invite user:', isInviteUser);
 
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      console.log('👤 Current user:', user);
+      // For invite users, we need to sign them up first
+      if (isInviteUser && !user) {
+        console.log('🎫 Processing invite user signup...');
+        
+        // Sign up the user with the provided details
+        const { data: signupData, error: signupError } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            data: {
+              first_name: values.firstName,
+              last_name: values.lastName,
+              phone: values.phone
+            }
+          }
+        });
+
+        if (signupError) {
+          console.error('❌ Signup error:', signupError);
+          throw new Error(`Signup failed: ${signupError.message}`);
+        }
+
+        console.log('✅ User signed up successfully:', signupData);
+        
+        // Wait for the user to be created
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      // Get current user (either existing or newly created)
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+      console.log('👤 Current user:', currentUser);
       console.log('❌ User error:', userError);
       
-      if (userError || !user) {
+      if (userError || !currentUser) {
         throw new Error('No authenticated user found. Please log in first.');
       }
 
       // Create the profile data
       const profileData = {
-        user_id: user.id,
+        user_id: currentUser.id,
         first_name: values.firstName,
         last_name: values.lastName,
         username: values.firstName.toLowerCase() + values.lastName.toLowerCase(),
@@ -348,6 +384,14 @@ export default function SetupProfile() {
                     </FormItem>
                   )} />
                 </div>
+
+                <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl><Input type="email" placeholder="jane@example.com" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
                 <FormField control={form.control} name="phone" render={({ field }) => (
                   <FormItem>
