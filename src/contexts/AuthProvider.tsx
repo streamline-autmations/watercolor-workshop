@@ -82,6 +82,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         errorDetails: profileError?.details,
         errorHint: profileError?.hint
       });
+      
+      // Additional debugging for profile data
+      if (profileData) {
+        console.log('🔍 Profile data details:', {
+          user_id: profileData.user_id,
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+          username: profileData.username,
+          phone: profileData.phone,
+          role: profileData.role,
+          isComplete: !!(profileData.first_name && profileData.last_name && profileData.username)
+        });
+      }
 
       if (profileError) {
         console.log('❌ Profile query failed with error:', profileError);

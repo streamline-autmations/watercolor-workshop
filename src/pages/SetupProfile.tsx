@@ -169,13 +169,19 @@ export default function SetupProfile() {
     const toastId = toast.loading('Setting up your account...');
 
     try {
+      console.log('🚀 Starting account setup process...');
+      console.log('📝 Form values:', values);
+
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('👤 Current user:', user);
+      console.log('❌ User error:', userError);
+      
       if (userError || !user) {
-        throw new Error('No authenticated user found');
+        throw new Error('No authenticated user found. Please log in first.');
       }
 
-      // Update the profile directly in the database
+      // Create the profile data
       const profileData = {
         user_id: user.id,
         first_name: values.firstName,
@@ -186,51 +192,71 @@ export default function SetupProfile() {
         updated_at: new Date().toISOString()
       };
       
-      console.log('💾 Saving profile data:', profileData);
+      console.log('💾 Attempting to save profile data:', profileData);
       
-      const { error: profileError } = await supabase
+      // Try to save the profile with detailed error handling
+      const { data: insertData, error: profileError } = await supabase
         .from('profiles')
-        .upsert(profileData);
+        .upsert(profileData, { 
+          onConflict: 'user_id',
+          ignoreDuplicates: false 
+        })
+        .select();
+
+      console.log('📊 Profile insert result:', { data: insertData, error: profileError });
 
       if (profileError) {
-        throw new Error('Failed to update profile: ' + profileError.message);
+        console.error('❌ Profile save error:', profileError);
+        throw new Error(`Failed to save profile: ${profileError.message}`);
       }
+
+      console.log('✅ Profile saved successfully');
+
+      // Wait a moment for the database to update
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Verify the profile was saved correctly
+      console.log('🔍 Verifying profile was saved...');
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      console.log('🔍 Profile verification result:', { data: verifyData, error: verifyError });
+      
+      if (verifyError) {
+        console.error('❌ Profile verification error:', verifyError);
+        throw new Error(`Failed to verify profile: ${verifyError.message}`);
+      }
+
+      console.log('✅ Profile verified successfully:', verifyData);
 
       toast.success('Account created successfully! Welcome.', { id: toastId });
       
-      // Refresh the session to get updated profile data
-      await supabase.auth.refreshSession();
-      
-      // Wait a moment for the profile to be updated
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Verify the profile was saved correctly
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', currentUser.id)
-          .single();
-        
-        console.log('🔍 Profile after save:', profileData);
-        console.log('🔍 Profile complete check:', {
-          first_name: profileData?.first_name,
-          last_name: profileData?.last_name,
-          username: profileData?.username,
-          isComplete: !!(profileData?.first_name && profileData?.last_name && profileData?.username)
-        });
+      // Force a session refresh
+      console.log('🔄 Refreshing session...');
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.error('❌ Session refresh error:', refreshError);
+      } else {
+        console.log('✅ Session refreshed successfully');
       }
+      
+      // Wait for the auth state to update
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // If they have an invite token, redirect to accept it
       if (inviteToken) {
+        console.log('🎫 Redirecting to accept invite:', inviteToken);
         navigate(`/accept-invite?invite=${inviteToken}`);
       } else {
-        // Redirect to home - the profile should now be complete
+        console.log('🏠 Redirecting to home page');
         navigate('/home');
       }
 
     } catch (err: any) {
+      console.error('❌ Account setup error:', err);
       const errorMessage = err.details || err.message || 'An unknown error occurred.';
       toast.error(errorMessage, { id: toastId });
       setError(errorMessage);
