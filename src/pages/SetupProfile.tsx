@@ -282,14 +282,9 @@ export default function SetupProfile() {
         }
       }
 
-      // Redirect based on invite status
-      if (inviteToken) {
-        console.log('🎫 Redirecting to accept invite...');
-        navigate(`/accept-invite?invite=${inviteToken}`);
-      } else {
-        console.log('🏠 Redirecting to home...');
-        navigate('/home');
-      }
+      // Always redirect to home after account setup
+      console.log('🏠 Account setup complete - redirecting to home');
+      navigate('/home');
 
       toast.success('Account setup complete!', { id: toastId });
 
