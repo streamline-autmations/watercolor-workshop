@@ -90,7 +90,7 @@ export default function SetupProfile() {
       console.log('🚫 No invite token found, redirecting to login');
       navigate('/login');
     }
-  }, [inviteToken, navigate, searchParams, user, session]);
+  }, [inviteToken, navigate, searchParams]);
 
   // For invite users, we don't need to be authenticated yet
   // They'll authenticate during the signup process
