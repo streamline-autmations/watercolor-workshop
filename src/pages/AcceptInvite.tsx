@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
 
 export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
@@ -14,6 +14,7 @@ export default function AcceptInvite() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting' | 'ready'>('waiting');
   const [message, setMessage] = useState('');
   const [courseId, setCourseId] = useState<string | null>(null);
+  const [showBrowserWarning, setShowBrowserWarning] = useState(false);
 
   // Parse invite token from both query params and hash fragments
   const inviteTokenFromParams = searchParams.get('invite');
@@ -25,6 +26,35 @@ export default function AcceptInvite() {
   // Also check for Supabase confirmation URLs that might contain invite info
   const confirmationUrl = searchParams.get('confirmation_url');
   const tokenHash = searchParams.get('token_hash');
+
+  // Detect Gmail browser and show warning
+  useEffect(() => {
+    const isGmailBrowser = navigator.userAgent.includes('Gmail') || 
+                          window.location.href.includes('gmail.com') ||
+                          document.referrer.includes('gmail.com') ||
+                          navigator.userAgent.includes('Mobile') && window.location.href.includes('mail.google.com');
+    
+    if (isGmailBrowser) {
+      setShowBrowserWarning(true);
+    }
+  }, []);
+
+  const openInBrowser = () => {
+    const url = window.location.href;
+    
+    // Try to open in external browser
+    if (navigator.userAgent.includes('Mobile')) {
+      // For mobile, try to open in external browser
+      window.open(url, '_blank');
+      
+      // Show instructions as fallback
+      setTimeout(() => {
+        alert('For the best experience, please copy this link and open it in your regular browser (Chrome, Safari, etc.)');
+      }, 1000);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
 
   useEffect(() => {
     console.log('🎫 AcceptInvite useEffect triggered:', {
@@ -176,11 +206,28 @@ export default function AcceptInvite() {
 
           {status === 'waiting' && (
             <div className="space-y-4">
+              {showBrowserWarning && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <ExternalLink className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    <strong>For best experience:</strong> You're viewing this in Gmail's browser. 
+                    <Button 
+                      variant="link" 
+                      onClick={openInBrowser}
+                      className="p-0 h-auto text-blue-600 underline ml-1"
+                    >
+                      Open in your regular browser
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <Alert>
                 <AlertDescription>
                   You've been invited to join a course! Create an account to get started.
                 </AlertDescription>
               </Alert>
+              
               <div className="space-y-2">
                 <Button onClick={handleSignUp} className="w-full">
                   Create Account & Join Course

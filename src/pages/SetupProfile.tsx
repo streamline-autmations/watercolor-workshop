@@ -192,16 +192,12 @@ export default function SetupProfile() {
     const toastId = toast.loading('Setting up your account...');
 
     try {
-      console.log('🚀 Starting account setup process...');
-      console.log('📝 Form values:', values);
-      console.log('🎫 Invite token:', inviteToken);
-      console.log('👤 Is invite user:', isInviteUser);
-
-      // For invite users, we need to sign them up first
+      console.log('🚀 Starting FAST account setup process...');
+      
+      // For invite users, sign them up quickly
       if (isInviteUser && !user) {
-        console.log('🎫 Processing invite user signup...');
+        console.log('🎫 Quick signup for invite user...');
         
-        // Sign up the user with the provided details
         const { data: signupData, error: signupError } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
@@ -215,74 +211,49 @@ export default function SetupProfile() {
         });
 
         if (signupError) {
-          console.error('❌ Signup error:', signupError);
           throw new Error(`Signup failed: ${signupError.message}`);
         }
-
-        console.log('✅ User signed up successfully:', signupData);
-        
-        // Wait for the user to be created
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('✅ Quick signup done');
       }
 
-      // Get current user (either existing or newly created)
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-      console.log('👤 Current user:', currentUser);
-      console.log('❌ User error:', userError);
+      // Get user and save profile in one go
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
       
-      if (userError || !currentUser) {
-        throw new Error('No authenticated user found. Please log in first.');
+      if (!currentUser) {
+        throw new Error('User not found');
       }
 
-      // Create the profile data
-      const profileData = {
-        user_id: currentUser.id,
-        first_name: values.firstName,
-        last_name: values.lastName,
-        username: values.firstName.toLowerCase() + values.lastName.toLowerCase(),
-        phone: values.phone,
-        role: 'student',
-        updated_at: new Date().toISOString()
-      };
-      
-      console.log('💾 Attempting to save profile data:', profileData);
-      
-      // Try to save the profile with detailed error handling
-      const { data: insertData, error: profileError } = await supabase
+      // Quick profile save
+      const { error: profileError } = await supabase
         .from('profiles')
-        .upsert(profileData, { 
-          onConflict: 'user_id',
-          ignoreDuplicates: false 
-        })
-        .select();
-
-      console.log('📊 Profile insert result:', { data: insertData, error: profileError });
+        .upsert({
+          user_id: currentUser.id,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          username: values.username,
+          phone: values.phone,
+          role: 'student',
+          updated_at: new Date().toISOString()
+        });
 
       if (profileError) {
-        console.error('❌ Profile save error:', profileError);
-        throw new Error(`Failed to save profile: ${profileError.message}`);
+        throw new Error(`Profile save failed: ${profileError.message}`);
       }
 
-      console.log('✅ Profile saved successfully');
-
-      toast.success('Account created successfully! Welcome.', { id: toastId });
+      console.log('✅ FAST setup complete!');
+      toast.success('Account ready!', { id: toastId });
       
-      // Simple redirect - let the auth system handle the rest
-      console.log('✅ Profile saved successfully, redirecting...');
-      
+      // Immediate redirect
       if (inviteToken) {
-        console.log('🎫 Redirecting to accept invite:', inviteToken);
         navigate(`/accept-invite?invite=${inviteToken}`);
       } else {
-        console.log('🏠 Redirecting to home page');
         navigate('/home');
       }
 
     } catch (err: any) {
-      console.error('❌ Account setup error:', err);
-      const errorMessage = err.details || err.message || 'An unknown error occurred.';
-      toast.error(errorMessage, { id: toastId });
-      setError(errorMessage);
+      console.error('❌ Setup error:', err);
+      toast.error(err.message, { id: toastId });
+      setError(err.message);
     }
   };
 
