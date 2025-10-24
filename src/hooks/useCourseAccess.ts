@@ -26,9 +26,9 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
-    // Check database enrollment for Christmas workshop (using UUID)
-    if (courseId === 'watercolour-christmas') {
-      console.log('🎄 Checking Christmas workshop enrollment for user:', user.id);
+    // Check database enrollment for Christmas workshop (using UUID or slug)
+    if (courseId === 'watercolour-christmas' || courseId === 'efe16488-1de6-4522-aeb3-b08cfae3a640') {
+      console.log('🎄 Checking Christmas workshop enrollment for user:', user.id, 'courseId:', courseId);
       try {
         const { data, error } = await supabase
           .from('enrollments')
@@ -41,9 +41,11 @@ export const useCourseAccess = (courseId: string) => {
           console.log('✅ User has Christmas workshop enrollment');
           setAccess({ hasAccess: true, loading: false, error: null });
           return;
+        } else {
+          console.log('❌ No Christmas workshop enrollment found:', error);
         }
       } catch (e) {
-        console.log('❌ No Christmas workshop enrollment found');
+        console.log('❌ Error checking Christmas workshop enrollment:', e);
       }
     }
 
@@ -83,39 +85,50 @@ export const useCourseAccess = (courseId: string) => {
       return;
     }
 
+    // Fallback: check if user has any enrollment for this course (by UUID or slug)
     try {
-      console.log('🔍 Checking access for course:', courseId, 'user:', user.id);
+      console.log('🔍 Checking enrollment for course:', courseId);
       
-      // Call Supabase RPC to check if user has access to this course
-      const { data, error } = await supabase.rpc('check_course_access', {
-        course_id: courseId,
-        user_id: user.id
-      });
-
-      console.log('📊 Course access result:', { data, error });
-
-      if (error) {
-        console.error('❌ Error checking course access:', error);
-        setAccess({
-          hasAccess: false,
-          loading: false,
-          error: error.message
-        });
-        return;
+      // First try by UUID
+      let { data, error } = await supabase
+        .from('enrollments')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('course_id', courseId)
+        .single();
+      
+      // If not found by UUID, try to find the course by slug and check enrollment
+      if (error && error.code === 'PGRST116') {
+        console.log('🔍 Course not found by UUID, trying by slug...');
+        const { data: courseData } = await supabase
+          .from('courses')
+          .select('id')
+          .eq('slug', courseId)
+          .single();
+        
+        if (courseData) {
+          console.log('🔍 Found course by slug:', courseData.id);
+          const { data: enrollmentData, error: enrollmentError } = await supabase
+            .from('enrollments')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('course_id', courseData.id)
+            .single();
+          
+          data = enrollmentData;
+          error = enrollmentError;
+        }
       }
-
-      setAccess({
-        hasAccess: data === true,
-        loading: false,
-        error: null
-      });
-    } catch (error) {
-      console.error('❌ Unexpected error checking course access:', error);
-      setAccess({
-        hasAccess: false,
-        loading: false,
-        error: 'Failed to check course access'
-      });
+      
+      if (!error && data) {
+        console.log('✅ User has enrollment for course:', courseId);
+        setAccess({ hasAccess: true, loading: false, error: null });
+        return;
+      } else {
+        console.log('❌ No enrollment found for course:', courseId, error);
+      }
+    } catch (e) {
+      console.log('❌ Error checking enrollment for course:', courseId, e);
     }
   }, [courseId, session, user]);
 
