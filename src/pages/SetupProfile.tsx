@@ -261,6 +261,27 @@ export default function SetupProfile() {
       // Wait a moment for the profile to be saved
       await new Promise(resolve => setTimeout(resolve, 500));
 
+      // For Supabase auth invites (no invite token), automatically enroll in Christmas course
+      if (!inviteToken) {
+        console.log('🎄 Supabase auth invite detected - auto-enrolling in Christmas course');
+        try {
+          const { error: enrollError } = await supabase
+            .from('enrollments')
+            .insert({
+              user_id: currentUser.id,
+              course_id: 'efe16488-1de6-4522-aeb3-b08cfae3a640' // Christmas course UUID
+            });
+          
+          if (enrollError) {
+            console.log('⚠️ Auto-enrollment failed (user might already be enrolled):', enrollError.message);
+          } else {
+            console.log('✅ Auto-enrolled in Christmas course');
+          }
+        } catch (e) {
+          console.log('⚠️ Auto-enrollment error:', e);
+        }
+      }
+
       // Redirect based on invite status
       if (inviteToken) {
         console.log('🎫 Redirecting to accept invite...');

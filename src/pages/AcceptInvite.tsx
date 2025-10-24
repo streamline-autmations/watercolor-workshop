@@ -68,7 +68,7 @@ export default function AcceptInvite() {
     });
 
     if (!inviteToken) {
-      console.log('❌ No invite token found in URL');
+      console.log('🎫 No invite token found - this might be a Supabase auth invite');
       console.log('🔍 URL analysis:', {
         fullUrl: window.location.href,
         pathname: window.location.pathname,
@@ -76,8 +76,17 @@ export default function AcceptInvite() {
         hash: window.location.hash,
         searchParams: Object.fromEntries(searchParams.entries())
       });
-      setStatus('error');
-      setMessage('No invite token provided. Please check your invite link.');
+      
+      // If user is not logged in, redirect to account setup
+      if (!session || !user) {
+        console.log('👤 No session/user - redirecting to account setup');
+        navigate('/account-setup');
+        return;
+      }
+      
+      // If user is logged in but no invite token, redirect to home
+      console.log('👤 User logged in but no invite token - redirecting to home');
+      navigate('/home');
       return;
     }
 
