@@ -194,9 +194,11 @@ export default function SetupProfile() {
     try {
       console.log('🚀 Starting FAST account setup process...');
       
-      // For invite users, sign them up quickly
+      let currentUser = user;
+      
+      // For invite users, sign them up if needed
       if (isInviteUser && !user) {
-        console.log('🎫 Quick signup for invite user...');
+        console.log('🎫 Signing up invite user...');
         
         const { data: signupData, error: signupError } = await supabase.auth.signUp({
           email: values.email,
@@ -213,17 +215,30 @@ export default function SetupProfile() {
         if (signupError) {
           throw new Error(`Signup failed: ${signupError.message}`);
         }
-        console.log('✅ Quick signup done');
+        
+        console.log('✅ Signup completed');
+        
+        // Wait for session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Get the current user after signup
+        const { data: { user: newUser } } = await supabase.auth.getUser();
+        currentUser = newUser;
       }
 
-      // Get user and save profile in one go
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      // If still no user, try to get it
+      if (!currentUser) {
+        const { data: { user: fetchedUser } } = await supabase.auth.getUser();
+        currentUser = fetchedUser;
+      }
       
       if (!currentUser) {
         throw new Error('User not found');
       }
 
-      // Quick profile save
+      console.log('👤 User found:', currentUser.id);
+
+      // Save profile with proper error handling
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -237,18 +252,25 @@ export default function SetupProfile() {
         });
 
       if (profileError) {
-        throw new Error(`Profile save failed: ${profileError.message}`);
+        console.error('❌ Profile save error:', profileError);
+        throw new Error(`Failed to save profile: ${profileError.message}`);
       }
 
-      console.log('✅ FAST setup complete!');
-      toast.success('Account ready!', { id: toastId });
-      
-      // Immediate redirect
+      console.log('✅ Profile saved successfully');
+
+      // Wait a moment for the profile to be saved
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Redirect based on invite status
       if (inviteToken) {
+        console.log('🎫 Redirecting to accept invite...');
         navigate(`/accept-invite?invite=${inviteToken}`);
       } else {
+        console.log('🏠 Redirecting to home...');
         navigate('/home');
       }
+
+      toast.success('Account setup complete!', { id: toastId });
 
     } catch (err: any) {
       console.error('❌ Setup error:', err);
