@@ -265,64 +265,14 @@ export default function SetupProfile() {
 
       console.log('✅ Profile saved successfully');
 
-      // Wait a moment for the database to update
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Verify the profile was saved correctly
-      console.log('🔍 Verifying profile was saved...');
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      console.log('🔍 Profile verification result:', { data: verifyData, error: verifyError });
-      
-      if (verifyError) {
-        console.error('❌ Profile verification error:', verifyError);
-        throw new Error(`Failed to verify profile: ${verifyError.message}`);
-      }
-
-      console.log('✅ Profile verified successfully:', verifyData);
-
       toast.success('Account created successfully! Welcome.', { id: toastId });
       
-      // Force a session refresh
-      console.log('🔄 Refreshing session...');
-      const { error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError) {
-        console.error('❌ Session refresh error:', refreshError);
-      } else {
-        console.log('✅ Session refreshed successfully');
-      }
+      // Simple redirect - let the auth system handle the rest
+      console.log('✅ Profile saved successfully, redirecting...');
       
-      // Wait for the auth state to update
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // If they have an invite token, process it directly
       if (inviteToken) {
-        console.log('🎫 Processing invite directly:', inviteToken);
-        
-        // Process the invite directly here instead of redirecting
-        try {
-          const { data, error } = await supabase.rpc('claim_course_invite', {
-            p_token: inviteToken
-          });
-          
-          if (error) {
-            console.error('❌ Error claiming invite:', error);
-            toast.error('Failed to process invite: ' + error.message);
-            navigate('/home');
-          } else {
-            console.log('✅ Invite processed successfully:', data);
-            toast.success('Welcome! You now have access to the course.');
-            navigate('/home');
-          }
-        } catch (err: any) {
-          console.error('❌ Error processing invite:', err);
-          toast.error('Failed to process invite: ' + err.message);
-          navigate('/home');
-        }
+        console.log('🎫 Redirecting to accept invite:', inviteToken);
+        navigate(`/accept-invite?invite=${inviteToken}`);
       } else {
         console.log('🏠 Redirecting to home page');
         navigate('/home');
