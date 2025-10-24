@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
-import { toast } from '@/utils/toast';
+import { showSuccess, showError } from '@/utils/toast';
 
 export default function SimpleSignup() {
   const navigate = useNavigate();
@@ -77,12 +77,12 @@ export default function SimpleSignup() {
 
       // Redirect to home
       navigate('/home');
-      toast.success('Account created successfully!');
+      showSuccess('Account created successfully!');
 
     } catch (err: any) {
       console.error('❌ Signup error:', err);
       setError(err.message);
-      toast.error(err.message);
+      showError(err.message);
     } finally {
       setLoading(false);
     }
