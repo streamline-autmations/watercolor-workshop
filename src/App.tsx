@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import SetupProfile from "./pages/SetupProfile";
 import AcceptInvite from "./pages/AcceptInvite";
+import SimpleInvite from "./pages/SimpleInvite";
 import AdminInvites from "./pages/AdminInvites";
 import AdminAccess from "./pages/AdminAccess";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -76,11 +77,13 @@ const AppRoutes = () => {
 
   // User is not logged in.
   if (!session) {
-    console.log('❌ No session, redirecting to login');
+    console.log('❌ No session, showing unauthenticated routes');
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
+        <Route path="/invite/:token" element={<SimpleInvite />} />
+        <Route path="/account-setup" element={<SetupProfile />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -130,6 +133,7 @@ const AppRoutes = () => {
         <Route path="/account-setup" element={<SetupProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
+        <Route path="/invite/:token" element={<SimpleInvite />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -143,6 +147,7 @@ const AppRoutes = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
+        <Route path="/invite/:token" element={<SimpleInvite />} />
         <Route path="/course/:slug" element={
           <CourseProtectedRoute>
             <CourseDetail />
