@@ -141,16 +141,25 @@ export default function AcceptInvite() {
         return;
       }
 
-      if (data && data.course_id) {
-        console.log('✅ Invite claimed successfully, course ID:', data.course_id);
-        setStatus('success');
-        setMessage('Invite accepted successfully! Redirecting to your dashboard...');
-        setCourseId(data.course_id);
+      if (data && data.length > 0) {
+        const result = data[0];
+        console.log('✅ Invite claim result:', result);
         
-        // Redirect to the homepage after a short delay
-        setTimeout(() => {
-          navigate('/home');
-        }, 2000);
+        if (result.success) {
+          console.log('✅ Invite claimed successfully, course ID:', result.course_id);
+          setStatus('success');
+          setMessage('Invite accepted successfully! Redirecting to your dashboard...');
+          setCourseId(result.course_id);
+          
+          // Redirect to the homepage after a short delay
+          setTimeout(() => {
+            navigate('/home');
+          }, 2000);
+        } else {
+          console.error('❌ Invite claim failed:', result.message);
+          setStatus('error');
+          setMessage(result.message || 'Failed to accept invite. Please try again.');
+        }
       } else {
         setStatus('error');
         setMessage('Invalid response from server. Please try again.');
