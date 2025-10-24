@@ -238,47 +238,20 @@ export default function SetupProfile() {
 
       console.log('👤 User found:', currentUser.id);
 
-      // Save profile with proper error handling
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          user_id: currentUser.id,
-          first_name: values.firstName,
-          last_name: values.lastName,
-          username: values.username,
-          phone: values.phone,
-          role: 'student',
-          updated_at: new Date().toISOString()
-        });
-
-      if (profileError) {
-        console.error('❌ Profile save error:', profileError);
-        throw new Error(`Failed to save profile: ${profileError.message}`);
-      }
-
-      console.log('✅ Profile saved successfully');
-
-      // Wait a moment for the profile to be saved
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Always auto-enroll in Christmas course for everyone
-      console.log('🎄 Auto-enrolling in Christmas course for everyone');
-      try {
-        const { error: enrollError } = await supabase
-          .from('enrollments')
-          .insert({
-            user_id: currentUser.id,
-            course_id: 'efe16488-1de6-4522-aeb3-b08cfae3a640' // Christmas course UUID
+          // Save profile using the simple function
+          const { error: profileError } = await supabase.rpc('create_user_profile_simple', {
+            p_user_id: currentUser.id,
+            p_first_name: values.firstName,
+            p_last_name: values.lastName,
+            p_phone: values.phone
           });
-        
-        if (enrollError) {
-          console.log('⚠️ Auto-enrollment failed (user might already be enrolled):', enrollError.message);
-        } else {
-          console.log('✅ Auto-enrolled in Christmas course');
-        }
-      } catch (e) {
-        console.log('⚠️ Auto-enrollment error:', e);
-      }
+
+          if (profileError) {
+            console.error('❌ Profile save error:', profileError);
+            throw new Error(`Failed to save profile: ${profileError.message}`);
+          }
+
+          console.log('✅ Profile saved successfully');
 
       // Always redirect to home after account setup
       console.log('🏠 Account setup complete - redirecting to home');
