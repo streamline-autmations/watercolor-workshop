@@ -80,10 +80,17 @@ export default function AcceptInvite() {
       console.log('🎫 Processing invite token:', token);
       console.log('👤 User ID:', user?.id);
 
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 10000); // 10 second timeout
+      });
+
       // Call the Supabase RPC function to claim the course invite
-      const { data, error } = await supabase.rpc('claim_course_invite', {
+      const claimPromise = supabase.rpc('claim_course_invite', {
         p_token: token
       });
+
+      const { data, error } = await Promise.race([claimPromise, timeoutPromise]) as any;
 
       console.log('📊 Invite claim result:', { data, error });
 
@@ -118,10 +125,16 @@ export default function AcceptInvite() {
         setStatus('error');
         setMessage('Invalid response from server. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Unexpected error processing invite:', error);
-      setStatus('error');
-      setMessage('An unexpected error occurred. Please try again.');
+      
+      if (error.message === 'Request timeout') {
+        setStatus('error');
+        setMessage('Request timed out. Please try again.');
+      } else {
+        setStatus('error');
+        setMessage('An unexpected error occurred. Please try again.');
+      }
     }
   };
 
