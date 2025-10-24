@@ -39,17 +39,17 @@ export default function AcceptInvite() {
     // Set redirecting state
     setRedirecting(true);
 
-    // If no invite token, redirect to account setup
+    // If no invite token, redirect to signup
     if (!inviteToken) {
-      console.log('👤 No invite token - redirecting to account setup');
-      setTimeout(() => navigate('/account-setup'), 500);
+      console.log('👤 No invite token - redirecting to signup');
+      setTimeout(() => navigate('/signup'), 500);
       return;
     }
 
-    // If user not logged in, redirect to account setup with invite token
+    // If user not logged in, redirect to signup
     if (!session || !user) {
-      console.log('👤 User not logged in - redirecting to account setup with invite');
-      setTimeout(() => navigate(`/account-setup?invite=${inviteToken}`), 500);
+      console.log('👤 User not logged in - redirecting to signup');
+      setTimeout(() => navigate('/signup'), 500);
       return;
     }
 

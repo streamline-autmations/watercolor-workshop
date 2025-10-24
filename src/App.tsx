@@ -10,6 +10,7 @@ import Bookmarks from "./pages/Bookmarks";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import SimpleSignup from "./pages/SimpleSignup";
 import Certificate from "./pages/Certificate";
 import ScrollToTop from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthProvider";
@@ -81,6 +82,7 @@ const AppRoutes = () => {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SimpleSignup />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/invite/:token" element={<SimpleInvite />} />
         <Route path="/account-setup" element={<SetupProfile />} />
