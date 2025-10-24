@@ -11,9 +11,7 @@ export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, session, loading } = useAuth();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting' | 'ready'>('waiting');
-  const [message, setMessage] = useState('');
-  const [courseId, setCourseId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
 
   // Parse invite token from both query params and hash fragments
@@ -103,6 +101,14 @@ export default function AcceptInvite() {
   }, [inviteToken, session, user, loading]);
 
   const processInvite = async (token: string) => {
+    // Prevent multiple simultaneous calls
+    if (isProcessing) {
+      console.log('⏳ Already processing invite, skipping...');
+      return;
+    }
+    
+    setIsProcessing(true);
+    
     try {
       setStatus('loading');
       setMessage('Processing your invite...');
@@ -174,6 +180,8 @@ export default function AcceptInvite() {
         setStatus('error');
         setMessage('An unexpected error occurred. Please try again.');
       }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
