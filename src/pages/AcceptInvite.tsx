@@ -144,12 +144,12 @@ export default function AcceptInvite() {
       if (data && data.course_id) {
         console.log('✅ Invite claimed successfully, course ID:', data.course_id);
         setStatus('success');
-        setMessage('Invite accepted successfully! Redirecting to your course...');
+        setMessage('Invite accepted successfully! Redirecting to your dashboard...');
         setCourseId(data.course_id);
         
-        // Redirect to the course after a short delay
+        // Redirect to the homepage after a short delay
         setTimeout(() => {
-          navigate(`/course/${data.course_id}`);
+          navigate('/home');
         }, 2000);
       } else {
         setStatus('error');
