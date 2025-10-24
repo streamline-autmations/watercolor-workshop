@@ -60,87 +60,40 @@ export default function SimpleSignup() {
 
       console.log('👤 User found:', user.id);
 
-      // The database trigger should handle profile creation and enrollment automatically
-      // But let's also do it manually as a backup
-      console.log('🔄 Database trigger should handle profile creation automatically...');
+      // Skip all triggers and webhooks - do everything manually
+      console.log('🔄 Creating profile and enrollment manually (bypassing all triggers)...');
       
-      // Wait a moment for the trigger to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if profile was created by trigger
-      const { data: existingProfile } = await supabase
+      // Create profile manually
+      const { error: profileError } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+        .insert({
+          user_id: user.id,
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+          role: 'student'
+        });
 
-      if (existingProfile) {
-        console.log('✅ Profile created by database trigger');
-        
-        // Update with additional info if needed
-        if (firstName || lastName || phone) {
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              first_name: firstName,
-              last_name: lastName,
-              phone: phone
-            })
-            .eq('user_id', user.id);
-          
-          if (updateError) {
-            console.log('⚠️ Profile update failed:', updateError.message);
-          } else {
-            console.log('✅ Profile updated with additional info');
-          }
-        }
+      if (profileError) {
+        console.error('❌ Profile creation failed:', profileError);
+        // Don't throw error - just log it and continue
+        console.log('⚠️ Profile creation failed, but continuing...');
       } else {
-        console.log('⚠️ Profile not created by trigger, creating manually...');
-        
-        // Create profile manually as fallback
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: user.id,
-            first_name: firstName,
-            last_name: lastName,
-            phone: phone,
-            role: 'student'
-          });
-
-        if (profileError) {
-          console.error('❌ Manual profile creation failed:', profileError);
-        } else {
-          console.log('✅ Profile created manually');
-        }
+        console.log('✅ Profile created successfully');
       }
 
-      // Check if enrollment was created by trigger
-      const { data: existingEnrollment } = await supabase
+      // Auto-enroll in Christmas course
+      const { error: enrollError } = await supabase
         .from('enrollments')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('course_id', 'efe16488-1de6-4522-aeb3-b08cfae3a640')
-        .single();
+        .insert({
+          user_id: user.id,
+          course_id: 'efe16488-1de6-4522-aeb3-b08cfae3a640'
+        });
 
-      if (existingEnrollment) {
-        console.log('✅ Auto-enrollment completed by database trigger');
+      if (enrollError) {
+        console.log('⚠️ Auto-enrollment failed (user might already be enrolled):', enrollError.message);
       } else {
-        console.log('⚠️ Auto-enrollment not created by trigger, creating manually...');
-        
-        // Auto-enroll in Christmas course as fallback
-        const { error: enrollError } = await supabase
-          .from('enrollments')
-          .insert({
-            user_id: user.id,
-            course_id: 'efe16488-1de6-4522-aeb3-b08cfae3a640'
-          });
-
-        if (enrollError) {
-          console.log('⚠️ Manual enrollment failed (user might already be enrolled):', enrollError.message);
-        } else {
-          console.log('✅ Auto-enrolled in Christmas course manually');
-        }
+        console.log('✅ Auto-enrolled in Christmas course');
       }
 
       // Redirect to home
