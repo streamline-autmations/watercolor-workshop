@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useAuth } from '../hooks/useAuth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import { Loader2, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase'; // Import supabase client
+import { supabase } from '../lib/supabase'; // Import supabase client
 
 export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
