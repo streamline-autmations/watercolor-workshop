@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 export default function SimpleInvite() {
@@ -60,7 +60,8 @@ export default function SimpleInvite() {
 
       // Call the Supabase RPC function to claim the course invite
       const { data, error } = await supabase.rpc('claim_course_invite', {
-        p_token: inviteToken
+        p_token: inviteToken,
+        p_user_id: user?.id // Pass the logged-in user's ID
       });
 
       console.log('📊 Invite claim result:', { data, error });
@@ -74,7 +75,7 @@ export default function SimpleInvite() {
           setMessage('This invite has expired or is invalid. Please request a new invite.');
         } else if (error.message.includes('already used') || error.message.includes('claimed')) {
           setStatus('error');
-          setMessage('This invite has already been used. Please request a new invite.');
+          setMessage('This invite has already been used.'); // Changed message to be more user-friendly
         } else {
           setStatus('error');
           setMessage(`Failed to accept invite: ${error.message}`);
@@ -90,7 +91,8 @@ export default function SimpleInvite() {
         
         // Redirect to the course after a short delay
         setTimeout(() => {
-          navigate(`/course/${data.course_id}`);
+          // Use course_slug if available, otherwise fall back to course_id
+          navigate(`/course/${data.course_slug || data.course_id}`);
         }, 2000);
       } else {
         setStatus('error');
@@ -105,6 +107,8 @@ export default function SimpleInvite() {
 
   const handleLogin = () => {
     // Redirect to login page with invite token preserved
+    // IMPORTANT: We redirect to /login and pass the token as a query param
+    // because /invite/:token is a protected route structure.
     navigate(`/login?invite=${token}`);
   };
 
@@ -114,7 +118,7 @@ export default function SimpleInvite() {
   };
 
   const handleRetry = () => {
-    if (token) {
+    if (token && user) {
       processInvite(token);
     }
   };
@@ -128,7 +132,7 @@ export default function SimpleInvite() {
             {status === 'waiting' && 'Please log in to accept this course invite.'}
             {status === 'loading' && 'Processing your invite...'}
             {status === 'success' && 'Welcome to your new course!'}
-            {status === 'error' && 'There was a problem with your invite.'}
+            {status ==='error' && 'There was a problem with your invite.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -176,7 +180,7 @@ export default function SimpleInvite() {
               <p className="text-green-700">{message}</p>
               {courseId && (
                 <p className="text-sm text-gray-600">
-                  Redirecting to course: {courseId}
+                  Redirecting to your course...
                 </p>
               )}
             </div>
@@ -191,9 +195,11 @@ export default function SimpleInvite() {
                 </Alert>
               </div>
               <div className="flex space-x-2">
-                <Button onClick={handleRetry} variant="outline" className="flex-1">
-                  Try Again
-                </Button>
+                {user && ( // Only show retry if user is logged in
+                  <Button onClick={handleRetry} variant="outline" className="flex-1">
+                    Try Again
+                  </Button>
+                )}
                 <Button onClick={() => navigate('/')} className="flex-1">
                   Go Home
                 </Button>
