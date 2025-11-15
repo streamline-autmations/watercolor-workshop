@@ -86,40 +86,19 @@ export const useCourseAccess = (courseId: string) => {
     }
 
     // Fallback: check if user has any enrollment for this course (by UUID or slug)
+    // Using a join with courses table to support both UUID and slug lookups
     try {
       console.log('🔍 Checking enrollment for course:', courseId);
-      
-      // First try by UUID
-      let { data, error } = await supabase
+
+      // Use a join with courses table and check both id and slug
+      // This handles both UUID and slug inputs in a single efficient query
+      const { data, error } = await supabase
         .from('enrollments')
-        .select('*')
+        .select('*, courses!inner(id, slug)')
         .eq('user_id', user.id)
-        .eq('course_id', courseId)
+        .or(`id.eq.${courseId},slug.eq.${courseId}`, { foreignTable: 'courses' })
         .single();
-      
-      // If not found by UUID, try to find the course by slug and check enrollment
-      if (error && error.code === 'PGRST116') {
-        console.log('🔍 Course not found by UUID, trying by slug...');
-        const { data: courseData } = await supabase
-          .from('courses')
-          .select('id')
-          .eq('slug', courseId)
-          .single();
-        
-        if (courseData) {
-          console.log('🔍 Found course by slug:', courseData.id);
-          const { data: enrollmentData, error: enrollmentError } = await supabase
-            .from('enrollments')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('course_id', courseData.id)
-            .single();
-          
-          data = enrollmentData;
-          error = enrollmentError;
-        }
-      }
-      
+
       if (!error && data) {
         console.log('✅ User has enrollment for course:', courseId);
         setAccess({ hasAccess: true, loading: false, error: null });
