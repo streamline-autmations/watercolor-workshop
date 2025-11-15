@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,12 @@ import { showSuccess, showError } from '@/utils/toast';
 
 export default function SimpleSignup() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get invite token from URL if present
+  const inviteToken = searchParams.get('invite');
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,7 +31,11 @@ export default function SimpleSignup() {
     const phone = formData.get('phone') as string;
 
     try {
-      console.log('🚀 Starting simple signup process...');
+      console.log('🚀 Starting simple signup process...', { hasInviteToken: !!inviteToken });
+
+      // Auto-generate username from email
+      const username = email.split('@')[0];
+      console.log('📝 Generated username from email:', username);
 
       // Sign up the user
       const { data: signupData, error: signupError } = await supabase.auth.signUp({
@@ -37,6 +45,7 @@ export default function SimpleSignup() {
           data: {
             first_name: firstName,
             last_name: lastName,
+            username: username,
             phone: phone
           }
         }
@@ -62,14 +71,15 @@ export default function SimpleSignup() {
 
       // Skip all triggers and webhooks - do everything manually
       console.log('🔄 Creating profile and enrollment manually (bypassing all triggers)...');
-      
-      // Create profile manually
+
+      // Create profile manually with username
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           user_id: user.id,
           first_name: firstName,
           last_name: lastName,
+          username: username,
           phone: phone,
           role: 'student'
         });
@@ -79,10 +89,39 @@ export default function SimpleSignup() {
         // Don't throw error - just log it and continue
         console.log('⚠️ Profile creation failed, but continuing...');
       } else {
-        console.log('✅ Profile created successfully');
+        console.log('✅ Profile created successfully with username:', username);
       }
 
-      // Auto-enroll in Christmas course
+      // If there's an invite token, redeem it and redirect to course
+      if (inviteToken) {
+        console.log('🎫 Processing invite token after signup:', inviteToken);
+
+        try {
+          const { data: inviteData, error: inviteError } = await supabase.rpc('claim_course_invite', {
+            p_token: inviteToken,
+            p_user_id: user.id
+          });
+
+          if (inviteError) {
+            console.error('❌ Failed to redeem invite:', inviteError);
+            showError('Account created, but failed to redeem invite. Please try the invite link again.');
+            navigate('/home');
+            return;
+          }
+
+          if (inviteData && inviteData.course_id) {
+            console.log('✅ Invite redeemed successfully, redirecting to course:', inviteData.course_slug || inviteData.course_id);
+            showSuccess('Account created and course access granted!');
+            navigate(`/course/${inviteData.course_slug || inviteData.course_id}`);
+            return;
+          }
+        } catch (inviteErr) {
+          console.error('❌ Unexpected error redeeming invite:', inviteErr);
+          showError('Account created, but failed to redeem invite.');
+        }
+      }
+
+      // Auto-enroll in Christmas course only if no invite token
       const { error: enrollError } = await supabase
         .from('enrollments')
         .insert({

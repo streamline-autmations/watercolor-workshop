@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: profileData.username,
           phone: profileData.phone,
           role: profileData.role,
-          isComplete: !!(profileData.first_name && profileData.last_name && profileData.username)
+          isComplete: !!(profileData.first_name && profileData.last_name)
         });
       }
 
@@ -173,8 +173,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               
               if (profileData) {
                 setProfile(profileData);
-                setIsProfileComplete(!!profileData.first_name);
-                console.log('✅ Profile set, complete:', !!profileData.first_name);
+                setIsProfileComplete(!!(profileData.first_name && profileData.last_name));
+                console.log('✅ Profile set, complete:', !!(profileData.first_name && profileData.last_name));
               } else {
                 console.log('⚠️ No profile data found - user needs setup');
                 setProfile(null);
@@ -250,8 +250,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             if (profileData) {
               setProfile(profileData);
-              setIsProfileComplete(!!profileData.first_name);
-              console.log('✅ Profile set from state change, complete:', !!profileData.first_name);
+              setIsProfileComplete(!!(profileData.first_name && profileData.last_name));
+              console.log('✅ Profile set from state change, complete:', !!(profileData.first_name && profileData.last_name));
             } else {
               console.log('⚠️ No profile data from state change - user needs setup');
               setProfile(null);
