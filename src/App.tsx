@@ -95,11 +95,10 @@ const AppRoutes = () => {
     );
   }
 
-  // Check if profile is complete
+  // Check if profile is complete - only require first_name and last_name
   const isProfileCompleteLocal = profile && (
     profile.first_name && profile.first_name.trim() !== '' &&
-    profile.last_name && profile.last_name.trim() !== '' &&
-    profile.username && profile.username.trim() !== ''
+    profile.last_name && profile.last_name.trim() !== ''
   );
 
   // Debug profile completion
