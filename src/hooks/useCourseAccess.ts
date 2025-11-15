@@ -90,14 +90,32 @@ export const useCourseAccess = (courseId: string) => {
     try {
       console.log('🔍 Checking enrollment for course:', courseId);
 
-      // Use a join with courses table and check both id and slug
-      // This handles both UUID and slug inputs in a single efficient query
-      const { data, error } = await supabase
-        .from('enrollments')
-        .select('*, courses!inner(id, slug)')
-        .eq('user_id', user.id)
-        .or(`id.eq.${courseId},slug.eq.${courseId}`, { foreignTable: 'courses' })
-        .single();
+      // Detect if courseId is a UUID (contains hyphens and is 36 chars) or a slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
+
+      let data, error;
+
+      if (isUUID) {
+        // If we have a UUID, query directly by course_id
+        const result = await supabase
+          .from('enrollments')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', courseId)
+          .single();
+        data = result.data;
+        error = result.error;
+      } else {
+        // If we have a slug, use a join query with courses table
+        const result = await supabase
+          .from('enrollments')
+          .select('*, courses!inner(id, slug, title)')
+          .eq('user_id', user.id)
+          .eq('courses.slug', courseId)
+          .single();
+        data = result.data;
+        error = result.error;
+      }
 
       if (!error && data) {
         console.log('✅ User has enrollment for course:', courseId);
