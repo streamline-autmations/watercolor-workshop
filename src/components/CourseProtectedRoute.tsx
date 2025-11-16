@@ -15,20 +15,13 @@ interface CourseProtectedRouteProps {
 
 export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) => {
   const { slug } = useParams<{ slug: string }>();
-  const { session, loading: authLoading, user } = useAuth();
-  
+  const { session, loading: authLoading } = useAuth();
+
   // Get course data to convert slug to course ID
   const courseData = getCourseData(slug || '');
   const courseId = courseData?.course.id || '';
-  
-  const { hasAccess, loading: accessLoading, error } = useCourseAccess(courseId);
 
-  // Special case: Admin users get access to all courses (backup check)
-  const ADMIN_USER_IDS = [
-    '7778cc4f-d55b-43bc-9b2c-68c6d885bb74',
-    '25817216-e3ab-418a-903a-c1108f451f59'
-  ];
-  const isAdminUser = user?.id ? ADMIN_USER_IDS.includes(user.id) : false;
+  const { hasAccess, loading: accessLoading, error } = useCourseAccess(courseId);
 
   // If course doesn't exist, show not found
   if (!courseData) {
@@ -68,8 +61,8 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
     return <Navigate to="/login" replace />;
   }
 
-  // If there's an error checking access, treat it as no access (unless they're admin)
-  if (error && !isAdminUser) {
+  // If there's an error checking access (shouldn't happen with open access)
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom p-4">
         <Card className="w-full max-w-md">
@@ -87,9 +80,9 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
               </AlertDescription>
             </Alert>
             <div className="flex space-x-2">
-              <Button 
-                onClick={() => window.history.back()} 
-                variant="outline" 
+              <Button
+                onClick={() => window.history.back()}
+                variant="outline"
                 className="flex-1"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -105,8 +98,8 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
     );
   }
 
-  // If user doesn't have access to this course (unless they're admin)
-  if (!hasAccess && !isAdminUser) {
+  // If user doesn't have access (only happens if not authenticated)
+  if (!hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bloom p-4">
         <Card className="w-full max-w-md">
