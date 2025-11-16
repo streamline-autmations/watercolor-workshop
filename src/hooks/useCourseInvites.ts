@@ -144,8 +144,7 @@ export const useCourseInvites = () => {
       console.log('👤 User ID:', user.id);
 
       const { data, error } = await supabase.rpc('claim_course_invite', {
-        p_token: token,
-        p_user_id: user.id
+        p_token: token
       });
 
       console.log('📊 Claim invite result:', { data, error });
