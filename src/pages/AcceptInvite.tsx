@@ -1,124 +1,111 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useCourseInvites } from '../hooks/useCourseInvites';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Loader2, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // Import supabase client
 
 export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, session, loading } = useAuth();
-  
+  const { claimCourseInvite, loading: claiming } = useCourseInvites();
+
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting'>('loading');
   const [message, setMessage] = useState('Please wait while we process your invite...');
   const [showRefresh, setShowRefresh] = useState(false);
+  const claimAttemptedRef = useRef(false);
 
   const inviteToken = searchParams.get('invite');
 
-  const processInvite = async (token: string, userId: string) => {
-    try {
-      setStatus('loading');
-      setMessage('Processing your invite...');
-
-      console.log('🎫 Processing invite token:', token);
-      console.log('👤 User ID:', userId);
-
-      // Call the Supabase RPC function to claim the course invite
-      const { data, error } = await supabase.rpc('claim_course_invite', {
-        p_token: token,
-        p_user_id: userId
-      });
-
-      console.log('📊 Invite claim result:', { data, error });
-
-      if (error) {
-        console.error('❌ Error claiming invite:', error);
-        
-        if (error.message.includes('expired') || error.message.includes('invalid')) {
-          setStatus('error');
-          setMessage('This invite has expired or is invalid. Please request a new invite.');
-        } else if (error.message.includes('already used') || error.message.includes('claimed')) {
-          setStatus('error');
-          setMessage('This invite has already been used.');
-        } else {
-          setStatus('error');
-          setMessage(`Failed to accept invite: ${error.message}`);
-        }
-        return;
-      }
-
-      if (data && data.course_id) {
-        console.log('✅ Invite claimed successfully, course ID:', data.course_id);
-        setStatus('success');
-        setMessage('Invite accepted successfully! Redirecting to your course...');
-        
-        // Redirect to the course after a short delay
-        setTimeout(() => {
-          navigate(`/course/${data.course_slug || data.course_id}`);
-        }, 2000);
-      } else {
-        setStatus('error');
-        setMessage('Invalid response from server. Please try again.');
-      }
-    } catch (error) {
-      console.error('❌ Unexpected error processing invite:', error);
-      setStatus('error');
-      setMessage('An unexpected error occurred. Please try again.');
-    }
-  };
-
+  // Effect for handling refresh timer
   useEffect(() => {
-    console.log('辞 AcceptInvite - Logic updated:', {
-      inviteToken,
-      hasSession: !!session,
-      hasUser: !!user,
-      loading
-    });
-
     const refreshTimer = setTimeout(() => {
       if (status === 'loading') {
         setShowRefresh(true);
       }
     }, 3000);
 
+    return () => clearTimeout(refreshTimer);
+  }, [status]);
+
+  // Effect for checking auth state and setting appropriate status
+  useEffect(() => {
+    console.log('🔄 AcceptInvite - Auth state check:', {
+      inviteToken,
+      hasSession: !!session,
+      hasUser: !!user,
+      loading
+    });
+
     if (loading) {
-      return () => clearTimeout(refreshTimer); // Wait if auth is loading
+      return; // Wait if auth is loading
     }
 
     // If no invite token, redirect to signup
     if (!inviteToken) {
-      console.log('側 No invite token - redirecting to signup');
+      console.log('➡️ No invite token - redirecting to signup');
       setStatus('error');
       setMessage('No invite token found. Redirecting to signup...');
       setTimeout(() => navigate('/signup'), 1500);
-      return () => clearTimeout(refreshTimer);
+      return;
     }
 
     // If user not logged in, show login/signup options
     if (!session || !user) {
-      console.log('側 User not logged in - showing options');
+      console.log('➡️ User not logged in - showing options');
       setStatus('waiting');
       setMessage('Please sign up or log in to accept this invite.');
-      // No automatic redirect, let user choose
-      return () => clearTimeout(refreshTimer);
+      return;
     }
-
-    // User is logged in, process the invite
-    console.log('側 User logged in - processing invite...');
-    processInvite(inviteToken, user.id);
-
-    return () => clearTimeout(refreshTimer);
   }, [inviteToken, session, user, loading, navigate]);
-  
+
+  // Effect for claiming invite when user is logged in
+  useEffect(() => {
+    const handleClaim = async () => {
+      if (inviteToken && session && user && !claiming && !claimAttemptedRef.current) {
+        claimAttemptedRef.current = true;
+        console.log('User is logged in. Attempting to claim invite...');
+        setStatus('loading');
+        setMessage('Processing your invite...');
+
+        const { courseSlug, error } = await claimCourseInvite(inviteToken);
+
+        if (error) {
+          console.error('Failed to claim invite for existing user:', error);
+          setStatus('error');
+          if (error.includes('expired') || error.includes('invalid')) {
+            setMessage('This invite has expired or is invalid. Please request a new invite.');
+          } else if (error.includes('already used') || error.includes('claimed')) {
+            setMessage('This invite has already been used.');
+          } else {
+            setMessage(`Failed to accept invite: ${error}`);
+          }
+        } else if (courseSlug) {
+          console.log('Invite claimed, redirecting to course:', courseSlug);
+          setStatus('success');
+          setMessage('Invite accepted successfully! Redirecting to your course...');
+          setTimeout(() => {
+            navigate(`/course/${courseSlug}`);
+          }, 2000);
+        } else {
+          setStatus('error');
+          setMessage('Invalid response from server. Please try again.');
+        }
+      }
+    };
+
+    handleClaim();
+  }, [inviteToken, session, user, claiming, claimCourseInvite, navigate]);
+
   const handleLogin = () => {
     navigate(`/login?invite=${inviteToken}`);
   };
 
   const handleSignUp = () => {
-    navigate(`/signup?invite=${inviteToken}`); // Assuming signup page can handle this
+    navigate(`/signup?invite=${inviteToken}`);
   };
 
   return (
@@ -131,7 +118,7 @@ export default function AcceptInvite() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          
+
           {status === 'loading' && (
             <div className="flex flex-col items-center justify-center space-y-4">
               <Loader2 className="h-6 w-6 animate-spin text-blue-600" />

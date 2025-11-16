@@ -105,7 +105,7 @@ export const useCourseInvites = () => {
 
     try {
       console.log('🗑️ Revoking invite:', inviteId);
-      
+
       // Delete the invite from the course_invites table
       const { error } = await supabase
         .from('course_invites')
@@ -131,10 +131,52 @@ export const useCourseInvites = () => {
     }
   }, [user]);
 
+  const claimCourseInvite = useCallback(async (token: string): Promise<{ courseSlug: string | null; error: string | null }> => {
+    if (!user) {
+      return { courseSlug: null, error: 'You must be logged in to claim invites' };
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('🎫 Claiming invite with token:', token);
+      console.log('👤 User ID:', user.id);
+
+      const { data, error } = await supabase.rpc('claim_course_invite', {
+        p_token: token,
+        p_user_id: user.id
+      });
+
+      console.log('📊 Claim invite result:', { data, error });
+
+      if (error) {
+        console.error('❌ Error claiming invite:', error);
+        setError(error.message);
+        return { courseSlug: null, error: error.message };
+      }
+
+      if (data && data.course_slug) {
+        console.log('✅ Invite claimed successfully, course slug:', data.course_slug);
+        return { courseSlug: data.course_slug, error: null };
+      }
+
+      return { courseSlug: null, error: 'Invalid response from server' };
+    } catch (err) {
+      console.error('❌ Unexpected error claiming invite:', err);
+      const errorMessage = 'Failed to claim invite';
+      setError(errorMessage);
+      return { courseSlug: null, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   return {
     createInvite,
     getInvites,
     revokeInvite,
+    claimCourseInvite,
     loading,
     error
   };
