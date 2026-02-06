@@ -60,7 +60,13 @@ Minimum payload n8n needs:
 - Use the returned `token` to build the link:
   - `https://YOUR_DOMAIN/accept-invite?invite=<token>`
 
-6) **Optional: Notify Admin**
+6) **Important: course_id must be a UUID**
+- `create_course_invite` expects `p_course_id` to be the `courses.id` UUID (not the slug).
+- If your shop mapping uses slugs, add a lookup step first:
+  - GET `https://<NEW_PROJECT_REF>.supabase.co/rest/v1/courses?select=id&slug=eq.<slug>`
+  - then pass the returned `id` to `create_course_invite`.
+
+7) **Optional: Notify Admin**
 - Post a Slack/WhatsApp/email to yourself with `order_id`, `email`, `course_slug`
 
 ## Testing Without Real Payments
@@ -77,4 +83,3 @@ $env:SKU_MAP_JSON=".\scripts\course_sku_map.example.json"
 $env:APP_BASE_URL="http://localhost:5173"
 node .\scripts\simulate_shop_webhook.mjs
 ```
-

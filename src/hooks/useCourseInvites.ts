@@ -140,6 +140,12 @@ export const useCourseInvites = () => {
         return { courseSlug: null, error: error.message };
       }
 
+      if (data && typeof data === 'object' && 'success' in data && (data as any).success === false) {
+        const msg = String((data as any).error ?? 'Invite could not be redeemed');
+        setError(msg);
+        return { courseSlug: null, error: msg };
+      }
+
       if (data && data.course_slug) {
         return { courseSlug: data.course_slug, error: null };
       }

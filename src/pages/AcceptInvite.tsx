@@ -18,7 +18,18 @@ export default function AcceptInvite() {
   const [showRefresh, setShowRefresh] = useState(false);
   const claimAttemptedRef = useRef(false);
 
-  const inviteToken = searchParams.get('invite');
+  const inviteTokenFromQuery = searchParams.get('invite');
+  const inviteToken = inviteTokenFromQuery ?? localStorage.getItem('pending_invite_token');
+
+  useEffect(() => {
+    if (!inviteTokenFromQuery && inviteToken) {
+      navigate(`/accept-invite?invite=${encodeURIComponent(inviteToken)}`, { replace: true });
+      return;
+    }
+    if (inviteTokenFromQuery) {
+      localStorage.setItem('pending_invite_token', inviteTokenFromQuery);
+    }
+  }, [inviteTokenFromQuery, inviteToken, navigate]);
 
   // Effect for handling refresh timer
   useEffect(() => {
@@ -61,6 +72,10 @@ export default function AcceptInvite() {
         setStatus('loading');
         setMessage('Processing your invite...');
 
+        if (import.meta.env.DEV) {
+          console.log('🎫 Claiming invite', { inviteToken, userId: user.id });
+        }
+
         const { courseSlug, error } = await claimCourseInvite(inviteToken);
 
         if (error) {
@@ -75,6 +90,7 @@ export default function AcceptInvite() {
         } else if (courseSlug) {
           setStatus('success');
           setMessage('Invite accepted successfully! Redirecting to your course...');
+          localStorage.removeItem('pending_invite_token');
           setTimeout(() => {
             navigate(`/course/${courseSlug}`);
           }, 2000);
