@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 interface Invite {
   id: string;
   course_id: string;
+  course_slug?: string;
+  course_title?: string;
   email: string;
   token: string;
   expires_at: string;
@@ -26,10 +28,10 @@ export default function AdminInvites() {
   const { user } = useAuth();
   const { createInvite, getInvites, revokeInvite, loading, error } = useCourseInvites();
   const [invites, setInvites] = useState<Invite[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<string>('');
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [expiresInDays, setExpiresInDays] = useState<number>(30);
-  const [newInvite, setNewInvite] = useState<{ courseId: string; email: string; token: string; expiresAt: string } | null>(null);
+  const [newInvite, setNewInvite] = useState<{ courseSlug: string; email: string; token: string; expiresAt: string } | null>(null);
 
   // Check if user is admin (you can implement your own admin check)
   const isAdmin = user?.email?.includes('admin') || user?.email?.includes('blom'); // Simple admin check
@@ -46,7 +48,7 @@ export default function AdminInvites() {
   };
 
   const handleCreateInvite = async () => {
-    if (!selectedCourse) {
+    if (!selectedCourseSlug) {
       toast.error('Please select a course');
       return;
     }
@@ -56,10 +58,10 @@ export default function AdminInvites() {
       return;
     }
 
-    const result = await createInvite(selectedCourse, email, expiresInDays);
+    const result = await createInvite(selectedCourseSlug, email, expiresInDays);
     if (result) {
       setNewInvite({
-        courseId: selectedCourse,
+        courseSlug: selectedCourseSlug,
         email: email,
         token: result.token,
         expiresAt: result.expires_at
@@ -93,9 +95,12 @@ export default function AdminInvites() {
     });
   };
 
-  const getCourseTitle = (courseId: string) => {
-    const course = courses.find(c => c.id === courseId);
-    return course?.title || courseId;
+  const getCourseTitle = (invite: Invite | { courseSlug: string }) => {
+    const slug = 'courseSlug' in invite ? invite.courseSlug : (invite.course_slug || '');
+    const fromView = 'course_title' in invite ? invite.course_title : undefined;
+    if (fromView) return fromView;
+    const course = courses.find(c => c.slug === slug);
+    return course?.title || slug || (('course_id' in invite ? invite.course_id : '') || 'Unknown course');
   };
 
   const getStatusBadge = (invite: Invite) => {
@@ -162,13 +167,13 @@ export default function AdminInvites() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <Label htmlFor="course">Course</Label>
-                <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                <Select value={selectedCourseSlug} onValueChange={setSelectedCourseSlug}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a course" />
                   </SelectTrigger>
                   <SelectContent>
                     {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id}>
+                      <SelectItem key={course.slug} value={course.slug}>
                         {course.title}
                       </SelectItem>
                     ))}
@@ -197,7 +202,7 @@ export default function AdminInvites() {
                 />
               </div>
               <div className="flex items-end">
-                <Button onClick={handleCreateInvite} disabled={loading || !selectedCourse || !email} className="w-full">
+                <Button onClick={handleCreateInvite} disabled={loading || !selectedCourseSlug || !email} className="w-full">
                   {loading ? 'Creating...' : 'Create Invite'}
                 </Button>
               </div>
@@ -213,7 +218,7 @@ export default function AdminInvites() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Course: {getCourseTitle(newInvite.courseId)}</Label>
+                <Label>Course: {getCourseTitle(newInvite)}</Label>
                 <Label>Email: {newInvite.email}</Label>
                 <Label>Expires: {formatDate(newInvite.expiresAt)}</Label>
                 <Label>Invite Link:</Label>
@@ -259,7 +264,7 @@ export default function AdminInvites() {
                   <div key={invite.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-medium">{getCourseTitle(invite.course_id)}</span>
+                        <span className="font-medium">{getCourseTitle(invite)}</span>
                         {getStatusBadge(invite)}
                       </div>
                       <div className="text-sm text-gray-600 space-y-1">

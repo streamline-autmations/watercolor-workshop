@@ -27,6 +27,7 @@ import AdminInvites from "./pages/AdminInvites";
 import AdminAccess from "./pages/AdminAccess";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CourseProtectedRoute } from "./components/CourseProtectedRoute";
+import { LessonProtectedRoute } from "./components/LessonProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const AppRoutes = () => {
@@ -158,7 +159,11 @@ const AppRoutes = () => {
             <CourseDetail />
           </CourseProtectedRoute>
         } />
-        <Route path="/lesson/:lessonId" element={<LessonPlayer />} />
+        <Route path="/lesson/:lessonId" element={
+          <LessonProtectedRoute>
+            <LessonPlayer />
+          </LessonProtectedRoute>
+        } />
         <Route path="/bookmarks" element={<Bookmarks />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/invites" element={<AdminInvites />} />

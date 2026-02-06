@@ -33,20 +33,12 @@ export default function AcceptInvite() {
 
   // Effect for checking auth state and setting appropriate status
   useEffect(() => {
-    console.log('🔄 AcceptInvite - Auth state check:', {
-      inviteToken,
-      hasSession: !!session,
-      hasUser: !!user,
-      loading
-    });
-
     if (loading) {
       return; // Wait if auth is loading
     }
 
     // If no invite token, redirect to signup
     if (!inviteToken) {
-      console.log('➡️ No invite token - redirecting to signup');
       setStatus('error');
       setMessage('No invite token found. Redirecting to signup...');
       setTimeout(() => navigate('/signup'), 1500);
@@ -55,7 +47,6 @@ export default function AcceptInvite() {
 
     // If user not logged in, show login/signup options
     if (!session || !user) {
-      console.log('➡️ User not logged in - showing options');
       setStatus('waiting');
       setMessage('Please sign up or log in to accept this invite.');
       return;
@@ -67,14 +58,12 @@ export default function AcceptInvite() {
     const handleClaim = async () => {
       if (inviteToken && session && user && !claiming && !claimAttemptedRef.current) {
         claimAttemptedRef.current = true;
-        console.log('User is logged in. Attempting to claim invite...');
         setStatus('loading');
         setMessage('Processing your invite...');
 
         const { courseSlug, error } = await claimCourseInvite(inviteToken);
 
         if (error) {
-          console.error('Failed to claim invite for existing user:', error);
           setStatus('error');
           if (error.includes('expired') || error.includes('invalid')) {
             setMessage('This invite has expired or is invalid. Please request a new invite.');
@@ -84,7 +73,6 @@ export default function AcceptInvite() {
             setMessage(`Failed to accept invite: ${error}`);
           }
         } else if (courseSlug) {
-          console.log('Invite claimed, redirecting to course:', courseSlug);
           setStatus('success');
           setMessage('Invite accepted successfully! Redirecting to your course...');
           setTimeout(() => {

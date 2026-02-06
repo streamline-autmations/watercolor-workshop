@@ -121,20 +121,6 @@ export default function SimpleSignup() {
         }
       }
 
-      // Auto-enroll in Christmas course only if no invite token
-      const { error: enrollError } = await supabase
-        .from('enrollments')
-        .insert({
-          user_id: user.id,
-          course_id: 'efe16488-1de6-4522-aeb3-b08cfae3a640'
-        });
-
-      if (enrollError) {
-        console.log('⚠️ Auto-enrollment failed (user might already be enrolled):', enrollError.message);
-      } else {
-        console.log('✅ Auto-enrolled in Christmas course');
-      }
-
       // Redirect to home
       navigate('/home');
       showSuccess('Account created successfully!');

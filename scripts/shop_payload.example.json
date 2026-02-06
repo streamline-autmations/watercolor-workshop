@@ -1,0 +1,8 @@
+{
+  "order_id": "ORDER-123",
+  "email": "buyer@example.com",
+  "line_items": [
+    { "sku": "SKU_XMAS_WATERCOLOR", "quantity": 1 }
+  ]
+}
+
