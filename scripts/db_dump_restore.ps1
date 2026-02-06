@@ -4,23 +4,19 @@ param(
   [Parameter(Mandatory=$false)][string]$OutDir = ".\migration_artifacts"
 )
 
+$oldLooksLikeUrl = $OldDbUrl -match '^postgres(ql)?://'
+$newLooksLikeUrl = $NewDbUrl -match '^postgres(ql)?://'
+if (-not $oldLooksLikeUrl -or -not $newLooksLikeUrl) {
+  throw "OldDbUrl/NewDbUrl must be full Postgres connection strings (postgresql://...), not project refs."
+}
+
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 $dumpPath = Join-Path $OutDir "old_app.sql"
 
 pg_dump $OldDbUrl `
   --no-owner --no-acl `
-  --exclude-schema=auth `
-  --exclude-schema=storage `
-  --exclude-schema=realtime `
-  --exclude-schema=supabase_functions `
-  --exclude-schema=extensions `
-  --exclude-schema=graphql_public `
-  --exclude-schema=pgbouncer `
-  --exclude-schema=pgsodium `
-  --exclude-schema=net `
-  --exclude-schema=vault `
-  --exclude-schema=cron `
+  --schema=public `
   --format=plain `
   --file $dumpPath
 
@@ -34,4 +30,3 @@ psql $NewDbUrl -Atc "select n.nspname, p.proname from pg_proc p join pg_namespac
 
 psql $OldDbUrl -Atc "select schemaname, relname, n_live_tup from pg_stat_user_tables order by schemaname, relname;" | Out-File -Encoding utf8 (Join-Path $OutDir "old_row_estimates.txt")
 psql $NewDbUrl -Atc "select schemaname, relname, n_live_tup from pg_stat_user_tables order by schemaname, relname;" | Out-File -Encoding utf8 (Join-Path $OutDir "new_row_estimates.txt")
-
