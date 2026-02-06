@@ -16,11 +16,6 @@ $dumpPath = Join-Path $OutDir "old_app.sql"
 
 psql $NewDbUrl -v ON_ERROR_STOP=1 -1 -c @"
 drop schema if exists public cascade;
-create schema public;
-grant usage on schema public to postgres, anon, authenticated, service_role;
-alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
-alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
-alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
 "@
 
 pg_dump $OldDbUrl `
@@ -30,6 +25,13 @@ pg_dump $OldDbUrl `
   --file $dumpPath
 
 psql $NewDbUrl -v ON_ERROR_STOP=1 -1 -f $dumpPath
+
+psql $NewDbUrl -v ON_ERROR_STOP=1 -1 -c @"
+grant usage on schema public to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+"@
 
 psql $OldDbUrl -Atc "select schemaname, tablename, policyname, cmd from pg_policies order by 1,2,3;" | Out-File -Encoding utf8 (Join-Path $OutDir "old_policies.txt")
 psql $NewDbUrl -Atc "select schemaname, tablename, policyname, cmd from pg_policies order by 1,2,3;" | Out-File -Encoding utf8 (Join-Path $OutDir "new_policies.txt")
