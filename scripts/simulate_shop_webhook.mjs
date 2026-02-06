@@ -87,8 +87,31 @@ async function run() {
   console.log(`- course slugs: ${Array.from(courseSlugs).join(", ")}`);
 
   for (const courseSlug of courseSlugs) {
+    // 1. Lookup UUID
+    const lookupUrl = `${normalizeUrl(supabaseUrl)}/rest/v1/courses?slug=eq.${courseSlug}&select=id`;
+    const lookupRes = await fetch(lookupUrl, {
+      method: "GET",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+    });
+
+    if (!lookupRes.ok) {
+        console.error(`Failed to lookup course slug: ${courseSlug}`);
+        process.exit(1);
+    }
+    
+    const lookupJson = await lookupRes.json();
+    const courseId = lookupJson?.[0]?.id;
+
+    if (!courseId) {
+        console.error(`Course not found for slug: ${courseSlug}`);
+        process.exit(1);
+    }
+
     const r = await callRpc(supabaseUrl, serviceRoleKey, "create_course_invite", {
-      p_course_id: courseSlug,
+      p_course_id: courseId,
       p_email: email,
       p_expires_in_days: 30,
     });
