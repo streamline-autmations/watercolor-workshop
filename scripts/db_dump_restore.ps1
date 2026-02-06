@@ -14,6 +14,15 @@ New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 $dumpPath = Join-Path $OutDir "old_app.sql"
 
+psql $NewDbUrl -v ON_ERROR_STOP=1 -1 -c @"
+drop schema if exists public cascade;
+create schema public;
+grant usage on schema public to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+"@
+
 pg_dump $OldDbUrl `
   --no-owner --no-acl `
   --schema=public `
