@@ -131,7 +131,8 @@ export const useCourseInvites = () => {
 
     try {
       const { data, error } = await supabase.rpc('claim_course_invite', {
-        p_token: normalizedToken
+        p_token: normalizedToken,
+        p_user_id: user.id
       });
 
       if (error) {
