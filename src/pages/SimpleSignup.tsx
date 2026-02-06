@@ -52,21 +52,41 @@ export default function SimpleSignup() {
       });
 
       if (signupError) {
-        throw new Error(`Signup failed: ${signupError.message}`);
+        const message = signupError.message ?? 'Signup failed';
+        const status = (signupError as any)?.status;
+        const isRateLimit = status === 429 || /too many requests|after \d+ seconds/i.test(message);
+
+        if (isRateLimit) {
+          const rateLimitMessage = inviteToken
+            ? 'Please wait a few seconds and try again. If you already received a confirmation email, confirm it, then open the invite link again.'
+            : 'Please wait a few seconds and try again. If you already received a confirmation email, confirm it first.';
+          setError(rateLimitMessage);
+          showError(rateLimitMessage);
+          return;
+        }
+
+        throw new Error(`Signup failed: ${message}`);
       }
 
       console.log('✅ Signup completed');
 
-      // Wait for session to be established
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const createdUser = signupData?.user;
+      const createdSession = signupData?.session;
 
-      // Get the current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('User not found after signup');
+      if (!createdUser) {
+        throw new Error('Signup completed but no user was returned');
       }
 
+      if (!createdSession) {
+        const confirmationMessage = inviteToken
+          ? 'Account created! Please check your email to confirm your account, then open the invite link again to get course access.'
+          : 'Account created! Please check your email to confirm your account.';
+        showSuccess(confirmationMessage);
+        navigate('/login', { replace: true });
+        return;
+      }
+
+      const user = createdUser;
       console.log('👤 User found:', user.id);
 
       // Skip all triggers and webhooks - do everything manually
