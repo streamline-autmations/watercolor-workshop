@@ -36,3 +36,7 @@ migration_artifacts/
 
 # Supabase local temp
 supabase/.temp/
+
+# Local migration CSVs
+old_auth_users.csv
+old_enrollments.csv
