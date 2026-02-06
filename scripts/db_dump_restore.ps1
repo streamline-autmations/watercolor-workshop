@@ -21,6 +21,10 @@ drop schema if exists public cascade;
 pg_dump $OldDbUrl `
   --no-owner --no-acl `
   --schema=public `
+  --exclude-table-data=public.enrollments `
+  --exclude-table-data=public.course_invites `
+  --exclude-table-data=public.profiles `
+  --exclude-table-data=public.user_* `
   --format=plain `
   --file $dumpPath
 
