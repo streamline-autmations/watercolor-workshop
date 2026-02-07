@@ -44,11 +44,52 @@ export const useCourseAccess = (courseSlug: string) => {
         .limit(1);
 
       if (error) {
+        const { data: courseRow, error: courseError } = await supabase
+          .from('courses')
+          .select('id')
+          .eq('slug', courseSlug)
+          .maybeSingle();
+
+        if (courseError) {
+          setAccess({
+            hasAccess: false,
+            loading: false,
+            error: courseError.message
+          });
+          return;
+        }
+
+        if (!courseRow?.id) {
+          setAccess({
+            hasAccess: false,
+            loading: false,
+            error: 'Unknown course slug'
+          });
+          return;
+        }
+
+        const { data: enrollmentRows, error: enrollmentError } = await supabase
+          .from('enrollments')
+          .select('course_id')
+          .eq('user_id', user.id)
+          .eq('course_id', courseRow.id)
+          .limit(1);
+
+        if (enrollmentError) {
+          setAccess({
+            hasAccess: false,
+            loading: false,
+            error: enrollmentError.message
+          });
+          return;
+        }
+
         setAccess({
-          hasAccess: false,
+          hasAccess: (enrollmentRows?.length ?? 0) > 0,
           loading: false,
-          error: error.message
+          error: null
         });
+
         return;
       }
 

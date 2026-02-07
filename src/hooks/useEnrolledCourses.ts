@@ -35,8 +35,51 @@ export const useEnrolledCourses = () => {
       if (cancelled) return;
 
       if (error) {
-        setRows([]);
-        setError(error.message);
+        const { data: enrollmentRows, error: enrollmentsError } = await supabase
+          .from('enrollments')
+          .select('course_id')
+          .eq('user_id', user.id);
+
+        if (cancelled) return;
+
+        if (enrollmentsError) {
+          setRows([]);
+          setError(enrollmentsError.message);
+          setLoading(false);
+          return;
+        }
+
+        const courseIds = (enrollmentRows ?? [])
+          .map((r) => (r as any).course_id)
+          .filter(Boolean) as string[];
+
+        if (courseIds.length === 0) {
+          setRows([]);
+          setLoading(false);
+          return;
+        }
+
+        const { data: coursesRows, error: coursesError } = await supabase
+          .from('courses')
+          .select('id, slug, title')
+          .in('id', courseIds);
+
+        if (cancelled) return;
+
+        if (coursesError) {
+          setRows([]);
+          setError(coursesError.message);
+          setLoading(false);
+          return;
+        }
+
+        const byId = new Map((coursesRows ?? []).map((c: any) => [c.id, c] as const));
+        const mapped: EnrollmentRow[] = courseIds
+          .map((id) => byId.get(id))
+          .filter(Boolean)
+          .map((c: any) => ({ courses: { slug: c.slug, title: c.title } }));
+
+        setRows(mapped);
         setLoading(false);
         return;
       }
@@ -80,4 +123,3 @@ export const useEnrolledCourses = () => {
 
   return { enrolledCourses, loading, error };
 };
-
