@@ -30,13 +30,13 @@ const CourseDetail = () => {
   const { course, modules } = data;
   const progress = getCourseProgress(course.id);
   const isCompleted = progress >= 100;
-  const isChristmasCourse = course.slug === 'christmas-watercolor-workshop';
+  const isHolidayCourse = course.slug === 'holiday-watercolor-workshop';
 
   return (
     <div className="container mx-auto py-10">
       <BackButton />
       
-      {isChristmasCourse ? (
+      {isHolidayCourse ? (
         <FestiveBanner>
           <h1 className="text-4xl font-bold mb-2 text-accent-foreground">{course.title}</h1>
           <p className="text-lg text-accent-foreground/80 max-w-2xl mx-auto">{course.tagline}</p>

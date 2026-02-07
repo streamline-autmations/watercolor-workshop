@@ -19,7 +19,7 @@ const Certificate = () => {
 
   const { course } = data;
   const progress = getCourseProgress(course.id);
-  const isChristmasCourse = slug === 'christmas-watercolor-workshop';
+  const isHolidayCourse = slug === 'holiday-watercolor-workshop';
 
   if (progress < 100) {
     // Redirect if the user hasn't completed the course
@@ -42,9 +42,9 @@ const Certificate = () => {
     <div className="min-h-screen bg-bloom flex items-center justify-center p-4 sm:p-8">
       <div className={cn(
         "w-full max-w-4xl bg-white/90 dark:bg-blom-dark-card/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-10 border-4 relative overflow-hidden",
-        isChristmasCourse ? "border-accent-foreground/20" : "border-primary/20"
+        isHolidayCourse ? "border-accent-foreground/20" : "border-primary/20"
       )}>
-        {isChristmasCourse && (
+        {isHolidayCourse && (
           <>
             <Snowflake className="absolute top-4 left-4 w-12 h-12 text-sky-200 dark:text-sky-500/20 opacity-70" />
             <Snowflake className="absolute bottom-4 right-4 w-16 h-16 text-sky-200 dark:text-sky-500/20 opacity-70" />
@@ -53,11 +53,11 @@ const Certificate = () => {
         )}
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <Award className={cn("w-16 h-16", isChristmasCourse ? "text-accent-foreground" : "text-primary")} />
+            <Award className={cn("w-16 h-16", isHolidayCourse ? "text-accent-foreground" : "text-primary")} />
           </div>
           <h1 className={cn(
             "text-2xl sm:text-4xl font-bold tracking-wider uppercase",
-            isChristmasCourse ? "text-accent-foreground" : "text-primary"
+            isHolidayCourse ? "text-accent-foreground" : "text-primary"
           )}>
             Certificate of Completion
           </h1>

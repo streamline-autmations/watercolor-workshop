@@ -11,8 +11,8 @@ After the student signs up (or logs in), the app redeems the token via `claim_co
 The website routes use course slugs. Current slugs in the frontend content are:
 
 - `online-watercolour-workshop`
-- `christmas-watercolor-workshop`
-- `blom-flower-workshop`
+- `holiday-watercolor-workshop`
+- `blom-flower-watercolor-workshop`
 
 Your Supabase RPC `create_course_invite` takes a `p_course_id` argument. In some setups this is a UUID, in others it’s a text identifier (slug). Use whichever your database function expects.
 
@@ -45,7 +45,7 @@ Use a Supabase key that can call the function (typically a Service Role key insi
 
 ```json
 {
-  "p_course_id": "christmas-watercolor-workshop",
+  "p_course_id": "holiday-watercolor-workshop",
   "p_email": "student@example.com",
   "p_expires_in_days": 30
 }
@@ -82,4 +82,3 @@ If you want “buy → immediately access”, consider one of:
 ## 7) Security note
 
 Course content (lesson metadata and some video URLs) is bundled in the frontend. The app blocks navigation by enrollment, but true content security depends on your video/file hosting enforcing its own access controls.
-

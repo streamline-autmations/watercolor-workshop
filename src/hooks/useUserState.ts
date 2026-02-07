@@ -5,9 +5,9 @@ import { useCallback } from 'react';
 
 // A helper to get all courses, including hidden ones, for internal logic.
 const getAllCourses = () => {
-    const christmas = getCourseData('christmas-watercolor-workshop');
+    const holiday = getCourseData('holiday-watercolor-workshop');
     const watercolour = getCourseData('online-watercolour-workshop');
-    return [christmas?.course, watercolour?.course].filter(Boolean);
+    return [holiday?.course, watercolour?.course].filter(Boolean);
 }
 
 export const useUserState = () => {

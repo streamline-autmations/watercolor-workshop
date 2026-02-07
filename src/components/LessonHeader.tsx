@@ -13,9 +13,9 @@ interface LessonHeaderProps {
 }
 
 export const LessonHeader = ({ course, module, lesson, prevLesson, nextLesson }: LessonHeaderProps) => {
-  const isChristmasCourse = course.slug === 'christmas-watercolor-workshop';
+  const isHolidayCourse = course.slug === 'holiday-watercolor-workshop';
 
-  const breadcrumbClass = isChristmasCourse ? "hover:text-accent-foreground" : "hover:text-primary";
+  const breadcrumbClass = isHolidayCourse ? "hover:text-accent-foreground" : "hover:text-primary";
 
   return (
     <div className="bg-white/70 dark:bg-blom-dark-card/70 backdrop-blur-lg p-4 rounded-2xl shadow-card mb-8 flex items-center justify-between flex-wrap gap-4">

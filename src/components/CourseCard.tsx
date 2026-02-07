@@ -20,7 +20,7 @@ export const CourseCard = ({ course }: CourseCardProps) => {
       <Card className="shadow-card group-hover:shadow-card-hover transition-all duration-300 ease-in-out group-hover:-translate-y-1 overflow-hidden">
         <div className="aspect-[4/3] overflow-hidden relative">
           <img src={course.cover} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          {course.slug === 'christmas-watercolor-workshop' && (
+          {course.slug === 'holiday-watercolor-workshop' && (
             <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-md">
               <Snowflake className="w-5 h-5 text-blue-500" />
             </div>
