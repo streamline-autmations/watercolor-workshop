@@ -129,18 +129,4 @@ begin
 end;
 $$;
 
-create or replace function public.claim_course_invite(
-  p_token uuid,
-  p_user_id uuid default null
-) returns jsonb
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  return public.claim_course_invite(p_token::text, p_user_id);
-end;
-$$;
-
 commit;
-

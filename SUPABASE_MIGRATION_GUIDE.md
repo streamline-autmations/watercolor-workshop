@@ -341,6 +341,9 @@ Validation:
 If claiming an invite fails with `record "invite_record" has no field "course_slug"`, update the Supabase RPC `claim_course_invite` by running:
 - [supabase_hotfix_claim_course_invite_course_slug.sql](file:///c:/Users/User/Desktop/Blom%20Cosmetics/BLom-Academy-trae/watercolor-workshop/scripts/supabase_hotfix_claim_course_invite_course_slug.sql)
 
+If claiming an invite fails with `Could not choose the best candidate function ... claim_course_invite(...)`, remove overloaded `claim_course_invite` functions (PostgREST RPC cannot disambiguate when token is UUID-looking) by running:
+- [remove_claim_course_invite_overloads.sql](file:///c:/Users/User/Desktop/Blom%20Cosmetics/BLom-Academy-trae/watercolor-workshop/supabase/migrations/remove_claim_course_invite_overloads.sql)
+
 Rollback:
 - Keep OLD project intact.
 - If NEW fails validation, revert Vercel env vars back to OLD and re-enable OLD automations.
