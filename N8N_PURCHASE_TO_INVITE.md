@@ -11,7 +11,7 @@ When someone buys a course, n8n should create an invite for the correct course a
 
 ## Important Identifiers
 Use the course **slug** for mapping and routing:
-- Example slugs: `christmas-watercolor-workshop`, `blom-flower-workshop`
+- Example slugs: `holiday-watercolor-workshop`, `blom-flower-watercolor-workshop`
 
 When calling Supabase, **prefer passing the `courses.id` UUID** into `create_course_invite` (most reliable across DB versions). If your `create_course_invite` function supports slugs directly, you can pass the slug, but UUID is safer.
 
@@ -52,7 +52,7 @@ Minimum payload n8n needs:
 - Body:
 ```json
 {
-  "p_course_id": "christmas-watercolor-workshop",
+  "p_course_id": "holiday-watercolor-workshop",
   "p_email": "buyer@example.com",
   "p_expires_in_days": 30
 }

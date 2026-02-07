@@ -91,8 +91,13 @@ export default function SimpleInvite() {
         
         // Redirect to the course after a short delay
         setTimeout(() => {
-          // Use course_slug if available, otherwise fall back to course_id
-          navigate(`/course/${data.course_slug || data.course_id}`);
+          if (data.course_slug) {
+            navigate(`/course/${data.course_slug}`);
+            return;
+          }
+
+          setStatus('error');
+          setMessage('Invite accepted, but the course link could not be resolved. Please contact support.');
         }, 2000);
       } else {
         setStatus('error');

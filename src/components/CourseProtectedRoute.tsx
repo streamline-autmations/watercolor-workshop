@@ -17,10 +17,20 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
   const { slug } = useParams<{ slug: string }>();
   const { session, loading: authLoading } = useAuth();
 
-  const courseData = getCourseData(slug || '');
-  const courseSlug = slug || '';
+  const rawSlug = slug || '';
+  const courseSlug = rawSlug === 'christmas-watercolor-workshop'
+    ? 'holiday-watercolor-workshop'
+    : rawSlug === 'blom-flower-workshop'
+      ? 'blom-flower-watercolor-workshop'
+      : rawSlug;
+
+  const courseData = getCourseData(courseSlug);
 
   const { hasAccess, loading: accessLoading, error } = useCourseAccess(courseSlug);
+
+  if (rawSlug !== courseSlug) {
+    return <Navigate to={`/course/${courseSlug}`} replace />;
+  }
 
   // If course doesn't exist, show not found
   if (!courseData) {

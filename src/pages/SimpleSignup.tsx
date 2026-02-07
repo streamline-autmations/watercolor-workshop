@@ -168,9 +168,16 @@ export default function SimpleSignup() {
           }
 
           if (inviteData && inviteData.course_id) {
-            console.log('✅ Invite redeemed successfully, redirecting to course:', inviteData.course_slug || inviteData.course_id);
-            showSuccess('Account created and course access granted!');
-            navigate(`/course/${inviteData.course_slug || inviteData.course_id}`);
+            if (inviteData.course_slug) {
+              console.log('✅ Invite redeemed successfully, redirecting to course:', inviteData.course_slug);
+              showSuccess('Account created and course access granted!');
+              navigate(`/course/${inviteData.course_slug}`);
+              return;
+            }
+
+            console.error('❌ Invite redeemed but missing course_slug:', inviteData);
+            showError('Account created and invite redeemed, but the course link could not be resolved.');
+            navigate('/home');
             return;
           }
         } catch (inviteErr) {

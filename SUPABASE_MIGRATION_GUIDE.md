@@ -338,6 +338,9 @@ Validation:
 - Storage: object counts per bucket match; public/private access behavior matches
 - Edge Functions: `setup-user` deploy + functional test
 
+If claiming an invite fails with `record "invite_record" has no field "course_slug"`, update the Supabase RPC `claim_course_invite` by running:
+- [supabase_hotfix_claim_course_invite_course_slug.sql](file:///c:/Users/User/Desktop/Blom%20Cosmetics/BLom-Academy-trae/watercolor-workshop/scripts/supabase_hotfix_claim_course_invite_course_slug.sql)
+
 Rollback:
 - Keep OLD project intact.
 - If NEW fails validation, revert Vercel env vars back to OLD and re-enable OLD automations.
