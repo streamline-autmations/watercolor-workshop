@@ -7,16 +7,54 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
-import { showSuccess, showError } from '@/utils/toast';
+import { showImportantError, showImportantSuccess, showError, showSuccess } from '@/utils/toast';
 
 export default function SimpleSignup() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState<string | null>(null);
 
   // Get invite token from URL if present
   const inviteToken = searchParams.get('invite');
+
+  const getEmailRedirectTo = () => {
+    const origin = window.location.origin;
+    if (inviteToken) return `${origin}/accept-invite?invite=${inviteToken}`;
+    return `${origin}/login`;
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!pendingConfirmationEmail) return;
+    setResendLoading(true);
+    setError(null);
+    try {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: pendingConfirmationEmail,
+        options: {
+          emailRedirectTo: getEmailRedirectTo(),
+        },
+      });
+
+      if (resendError) {
+        const message = resendError.message ?? 'Could not resend confirmation email.';
+        setError(message);
+        showImportantError(message);
+        return;
+      }
+
+      showImportantSuccess('Confirmation email sent again. Please check your inbox and spam/junk folder.');
+    } catch (err: any) {
+      const message = err?.message ?? 'Could not resend confirmation email.';
+      setError(message);
+      showImportantError(message);
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,8 +119,8 @@ export default function SimpleSignup() {
         const confirmationMessage = inviteToken
           ? 'Account created! Please check your email to confirm your account, then open the invite link again to get course access.'
           : 'Account created! Please check your email to confirm your account.';
-        showSuccess(confirmationMessage);
-        navigate('/login', { replace: true });
+        setPendingConfirmationEmail(email);
+        showImportantSuccess(confirmationMessage);
         return;
       }
 
@@ -164,89 +202,151 @@ export default function SimpleSignup() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+          {pendingConfirmationEmail ? (
+            <div className="space-y-4">
+              <Alert>
+                <AlertDescription className="text-base leading-relaxed">
+                  <div className="font-semibold text-lg">Confirm your email to finish setup</div>
+                  <div className="mt-2">
+                    We created your account for <span className="font-medium">{pendingConfirmationEmail}</span>.
+                    Please click the confirmation link in your email.
+                  </div>
+                  {inviteToken ? (
+                    <div className="mt-2">
+                      After confirming, come back to your invite link to unlock your course.
+                    </div>
+                  ) : null}
+                  <div className="mt-2">
+                    If you don’t see it, check spam/junk, then use “Resend confirmation email”.
+                  </div>
+                </AlertDescription>
               </Alert>
-            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                type="text"
-                placeholder="Enter your first name"
-                required
-              />
+              {error ? (
+                <Alert variant="destructive">
+                  <AlertDescription className="text-base">{error}</AlertDescription>
+                </Alert>
+              ) : null}
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resendLoading}
+                  className="flex-1"
+                >
+                  {resendLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Resend confirmation email'
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/login')}
+                >
+                  Go to login
+                </Button>
+              </div>
+
+              {inviteToken ? (
+                <div className="text-sm text-muted-foreground">
+                  Invite URL:{' '}
+                  <span className="break-all">{`${window.location.origin}/accept-invite?invite=${inviteToken}`}</span>
+                </div>
+              ) : null}
             </div>
+          ) : (
+            <>
+              <form onSubmit={handleSignup} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                type="text"
-                placeholder="Enter your last name"
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="Enter your first name"
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Enter your last name"
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone (Optional)</Label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder="Enter your phone number"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Create a password"
-                required
-                minLength={6}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone (Optional)</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </Button>
-          </form>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Create a password"
+                    required
+                    minLength={6}
+                  />
+                </div>
 
-          <div className="mt-4 text-center">
-            <Button 
-              variant="link" 
-              onClick={() => navigate('/login')}
-              className="text-sm"
-            >
-              Already have an account? Log in
-            </Button>
-          </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    'Create Account'
+                  )}
+                </Button>
+              </form>
+
+              <div className="mt-4 text-center">
+                <Button
+                  variant="link"
+                  onClick={() => navigate('/login')}
+                  className="text-sm"
+                >
+                  Already have an account? Log in
+                </Button>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

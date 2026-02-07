@@ -10,8 +10,10 @@ When someone buys a course, n8n should create an invite for the correct course a
 - `claim_course_invite(p_token)`: redeems the token and creates an enrollment
 
 ## Important Identifiers
-Use the course **slug** everywhere in automation:
+Use the course **slug** for mapping and routing:
 - Example slugs: `christmas-watercolor-workshop`, `blom-flower-workshop`
+
+When calling Supabase, **prefer passing the `courses.id` UUID** into `create_course_invite` (most reliable across DB versions). If your `create_course_invite` function supports slugs directly, you can pass the slug, but UUID is safer.
 
 ## Recommended Mapping
 Create a mapping from your shop’s product identifier to a course slug:
@@ -60,14 +62,39 @@ Minimum payload n8n needs:
 - Use the returned `token` to build the link:
   - `https://YOUR_DOMAIN/accept-invite?invite=<token>`
 
-6) **Important: course_id must be a UUID**
-- `create_course_invite` expects `p_course_id` to be the `courses.id` UUID (not the slug).
-- If your shop mapping uses slugs, add a lookup step first:
+6) **Course lookup (slug → UUID)**
+- If your shop mapping uses slugs (recommended), add a lookup step:
   - GET `https://<NEW_PROJECT_REF>.supabase.co/rest/v1/courses?select=id&slug=eq.<slug>`
-  - then pass the returned `id` to `create_course_invite`.
+  - Then pass the returned `id` into `create_course_invite` as `p_course_id`.
 
 7) **Optional: Notify Admin**
 - Post a Slack/WhatsApp/email to yourself with `order_id`, `email`, `course_slug`
+
+## Practical n8n node setup (recommended)
+- Webhook Trigger → receive `{ order_id, email, line_items[] }`
+- Code/Function → extract SKUs, map to distinct `course_slug[]`, fail fast on unknown SKUs
+- Split In Batches (or loop) → for each course slug:
+  - HTTP Request (GET courses) → fetch `id` by `slug`
+  - HTTP Request (POST RPC create_course_invite) → create invite token
+- Email node → send one email (either per course, or compile multiple invite links into one email)
+
+## Idempotency (avoid double-sending invites)
+Payment webhooks can retry. Add a guard so one order only generates invites once:
+- Use n8n’s built-in data store (key = `order_id`) and exit early if already processed, or
+- Store `order_id` in your database (recommended long-term) and check before creating new invites.
+
+## How the student actually gets access
+- n8n **does not** grant access by itself.
+- The invite link takes the student to `/accept-invite`.
+- After the student logs in (or signs up), the app calls `claim_course_invite(token)`.
+- `claim_course_invite` creates the `enrollments` row, and **that** is what removes the lock screen.
+
+## Optional: “Instant access” (auto-enroll existing users)
+If you want “paid → already unlocked without clicking an invite”, you need extra automation:
+- Look up the Supabase user id by email (Admin API / service role).
+- Call a server-side enrollment function (for example `enroll_user_by_id`) to insert into `enrollments`.
+
+This is intentionally not the default, because it requires elevated permissions and careful handling of mismatched emails (purchase email must match the login email).
 
 ## Testing Without Real Payments
 Use the local scripts to simulate a purchase webhook:

@@ -31,6 +31,9 @@ dist-ssr
 # Trae / IDE
 .trae/
 
+# Vercel local metadata
+.vercel/
+
 # Local migration artifacts
 migration_artifacts/
 
