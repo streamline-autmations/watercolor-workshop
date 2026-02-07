@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
 import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
-import { courses, modules, lessons } from '@/data/mock';
+import { lessons } from '@/data/mock';
 import { useNavigate } from 'react-router-dom';
-import { FileVideo, Book, GraduationCap } from 'lucide-react';
+import { FileVideo, GraduationCap } from 'lucide-react';
+import { useCatalogCourses } from '@/hooks/useCatalogCourses';
 
 export const SearchModal = ({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) => {
   const navigate = useNavigate();
+  const { courses } = useCatalogCourses();
 
   const handleSelect = (path: string) => {
     navigate(path);

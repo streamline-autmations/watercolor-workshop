@@ -6,6 +6,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { CourseCard } from '@/components/CourseCard';
 import { Star, PlayCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useEnrolledCourses } from '@/hooks/useEnrolledCourses';
 
 const ContinueWatchingCard = ({ lesson }: { lesson: any }) => {
   const { getLessonProgress } = useUserState();
@@ -32,8 +33,8 @@ const ContinueWatchingCard = ({ lesson }: { lesson: any }) => {
 
 const Home = () => {
   const { profile } = useAuth();
-  const { continueWatchingList, getEnrolledCourses, bookmarkedLessons } = useUserState();
-  const enrolledCourses = getEnrolledCourses();
+  const { continueWatchingList, bookmarkedLessons } = useUserState();
+  const { enrolledCourses } = useEnrolledCourses();
   const recentBookmarks = bookmarkedLessons.slice(0, 3);
 
   return (

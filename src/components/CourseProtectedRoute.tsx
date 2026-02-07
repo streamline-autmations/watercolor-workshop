@@ -22,7 +22,9 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
     ? 'holiday-watercolor-workshop'
     : rawSlug === 'blom-flower-workshop'
       ? 'blom-flower-watercolor-workshop'
-      : rawSlug;
+      : rawSlug === 'watercolour-christmas'
+        ? 'holiday-watercolor-workshop'
+        : rawSlug;
 
   const courseData = getCourseData(courseSlug);
 
@@ -39,9 +41,7 @@ export const CourseProtectedRoute = ({ children }: CourseProtectedRouteProps) =>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Course Not Found</CardTitle>
-            <CardDescription>
-              The course you're looking for doesn't exist.
-            </CardDescription>
+            <CardDescription>The course "{rawSlug || 'unknown'}" doesn't exist.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => window.location.href = '/explore'} className="w-full">

@@ -1,17 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useCatalogCourses } from '@/hooks/useCatalogCourses';
 import { CourseCard } from "@/components/CourseCard";
-import { courses } from "@/data/mock";
 import { CourseCardSkeleton } from '@/components/CourseCardSkeleton';
 
 const Explore = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // Simulate a 1.5 second network request
-    return () => clearTimeout(timer);
-  }, []);
+  const { courses, loading } = useCatalogCourses();
 
   return (
     <div className="space-y-16 pb-16">
@@ -27,7 +19,7 @@ const Explore = () => {
       <section id="explore" className="container mx-auto">
         <h2 className="text-2xl font-bold mb-6">Explore Courses</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {isLoading ? (
+          {loading ? (
             Array.from({ length: 3 }).map((_, index) => <CourseCardSkeleton key={index} />)
           ) : (
             courses.map(course => (

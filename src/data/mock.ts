@@ -27,15 +27,15 @@ const allCourses: Course[] = [
   },
   {
     id: "watercolour-christmas",
-    title: "Holiday Watercolor Workshop",
+    title: "Christmas Watercolor Nail Art Workshop",
     slug: "holiday-watercolor-workshop",
     cover: "/christmas-watercolor-card.webp",
-    summary: "Create festive holiday watercolor nail art designs. Learn beautiful seasonal patterns perfect for the festive season.",
+    summary: "Create festive Christmas watercolor nail art designs. Learn beautiful seasonal patterns perfect for the festive season.",
     level: "Beginner",
-    tags: ["Watercolor", "Nail Art", "Holiday"],
+    tags: ["Watercolor", "Nail Art", "Christmas"],
     durationText: "Self-paced",
-    tagline: "Create beautiful holiday watercolor nail art.",
-    description: "Get into the festive spirit with our Holiday Watercolor Workshop! Learn to create stunning seasonal nail art designs that will add sparkle and joy to your client's nails this festive season.",
+    tagline: "Create beautiful Christmas watercolor nail art.",
+    description: "Get into the festive spirit with our Christmas Watercolor Nail Art Workshop! Learn to create stunning seasonal nail art designs that will add sparkle and joy to your client's nails this festive season.",
     notes: [
       "Kit not included. A full list of recommended materials is provided inside the course.",
       "Access to a private Facebook group for sharing your floral creations.",
@@ -52,7 +52,7 @@ const allCourses: Course[] = [
   },
   {
     id: "blom-flower-workshop",
-    title: "Flower Watercolor Workshop",
+    title: "Flower Nail Art Workshop",
     slug: "blom-flower-watercolor-workshop",
     cover: "/Blom-flower-workshop.webp",
     summary: "Master the art of creating stunning floral watercolor nail designs. Learn essential techniques and create beautiful flower patterns that will make your clients bloom with joy.",
@@ -118,7 +118,7 @@ export const lessons: Lesson[] = [
   // New Christmas Workshop Lessons
   // Module 1
   { id: "xmas-l1-1", moduleId: "xmas-m1", title: "Introduction", durationSec: 180, poster: "https://picsum.photos/seed/xmas-intro/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/3a9aaf75-459d-4851-947f-3d2b5d07623c?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1, isPreview: true },
-  { id: "xmas-l1-2", moduleId: "xmas-m1", title: "Workshop Overview", durationSec: 60, poster: "https://picsum.photos/seed/xmas-overview/400/225", content: `<h2>Welcome to the Blom Cosmetics Holiday Watercolor Workshop</h2><p>Hi, I’m Avané Crous, and I’d love to welcome you to this special festive workshop.</p><p>Art has always been my passion—I was top of my art class in school, and that love has only grown stronger throughout my career. I’ve been a qualified nail technician for over 10 years, and for the past 7 years I’ve had the privilege of training others in both professional nail art and foundational techniques. Along the way, I’ve been honored to win Nail Artist of the Year in 2019 and 2020, titles I carry with great pride.</p><p>But beyond achievements, what truly fulfills me is teaching. My heart is in empowering fellow nail technicians with the skills, confidence, and support to grow. As one of my favorite quotes goes:</p><blockquote>“A true mentor is not someone who gives you the answers, but someone who shows you the way and inspires you to find your own path.”</blockquote><p>That’s what this workshop is all about.</p><h3>Why This Workshop Is Different</h3><p>This Holiday Watercolor Workshop has been carefully designed to be simple, creative, and effective. The quick designs you’ll learn here are versatile and will add something unique to your client menu just in time for the festive season.</p><p>I’m here to give you all the support you need, both on and off the course. I love seeing my students succeed, and nothing makes me happier than hearing how these skills help you in your nail journey.</p><p>At the end of the workshop, I’d be so grateful if you could share your feedback with me. You’re welcome to WhatsApp me directly at <a href="tel:0795483317" class="text-primary hover:underline">079 548 3317</a>—I’d love to hear from you. ♡</p>`, resources: [], order: 2 },
+  { id: "xmas-l1-2", moduleId: "xmas-m1", title: "Workshop Overview", durationSec: 60, poster: "https://picsum.photos/seed/xmas-overview/400/225", content: `<h2>Welcome to the Blom Cosmetics Christmas Watercolor Nail Art Workshop</h2><p>Hi, I’m Avané Crous, and I’d love to welcome you to this special festive workshop.</p><p>Art has always been my passion—I was top of my art class in school, and that love has only grown stronger throughout my career. I’ve been a qualified nail technician for over 10 years, and for the past 7 years I’ve had the privilege of training others in both professional nail art and foundational techniques. Along the way, I’ve been honored to win Nail Artist of the Year in 2019 and 2020, titles I carry with great pride.</p><p>But beyond achievements, what truly fulfills me is teaching. My heart is in empowering fellow nail technicians with the skills, confidence, and support to grow. As one of my favorite quotes goes:</p><blockquote>“A true mentor is not someone who gives you the answers, but someone who shows you the way and inspires you to find your own path.”</blockquote><p>That’s what this workshop is all about.</p><h3>Why This Workshop Is Different</h3><p>This Christmas Watercolor Nail Art Workshop has been carefully designed to be simple, creative, and effective. The quick designs you’ll learn here are versatile and will add something unique to your client menu just in time for the festive season.</p><p>I’m here to give you all the support you need, both on and off the course. I love seeing my students succeed, and nothing makes me happier than hearing how these skills help you in your nail journey.</p><p>At the end of the workshop, I’d be so grateful if you could share your feedback with me. You’re welcome to WhatsApp me directly at <a href="tel:0795483317" class="text-primary hover:underline">079 548 3317</a>—I’d love to hear from you. ♡</p>`, resources: [], order: 2 },
   { id: "xmas-l1-3", moduleId: "xmas-m1", title: "Required Materials Checklist", durationSec: 60, poster: "https://picsum.photos/seed/xmas-materials/400/225", content: `<h3>Products that will be needed</h3><p>Please see the "Required Materials" section on the main course page for a full list of items needed for this workshop.</p><p>Watercolor Palettes are available at PNA stores nationwide.</p>`, resources: [], order: 3 },
   // Module 2
   { id: "xmas-l2-1", moduleId: "xmas-m2", title: "Preparing Your Nails", durationSec: 60, poster: "https://picsum.photos/seed/xmas-prep/400/225", content: `<h3>Understanding Watercolor for Nail Art</h3><p>Watercolor is an incredible medium for nail art because it allows for soft, dreamy, and detailed designs with a professional finish.</p><p><strong>On Acrylic Nails:</strong> Apply a top coat and cure for 60 seconds. Buff to a matte surface before painting—watercolor will not adhere properly to gloss.</p><p><strong>On Gel Nails:</strong> Simply buff the surface to matte and then paint your designs.</p><p>This ensures the watercolor grips beautifully and allows you to create stunning, long-lasting art.</p>`, resources: [], order: 1 },
