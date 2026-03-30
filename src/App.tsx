@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import SimpleSignup from "./pages/SimpleSignup";
 import Certificate from "./pages/Certificate";
 import ScrollToTop from "./components/ScrollToTop";
+import InstallPrompt from "./components/InstallPrompt";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { useAuth } from "./hooks/useAuth";
 import { Skeleton } from "./components/ui/skeleton";
@@ -192,6 +193,7 @@ const App = () => (
       <AuthProvider>
         <ScrollToTop />
         <AppRoutes />
+        <InstallPrompt />
       </AuthProvider>
     </BrowserRouter>
   </ErrorBoundary>
