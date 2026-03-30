@@ -21,6 +21,14 @@ export default function InstallPrompt() {
       return;
     }
 
+    // Check if iOS device
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      // Show prompt for iOS - they can use "Add to Home Screen"
+      setShowPrompt(true);
+      return;
+    }
+
     const handler = (e: Event) => {
       // Prevent Chrome 76+ from automatically showing the prompt
       e.preventDefault();
@@ -29,12 +37,6 @@ export default function InstallPrompt() {
     };
 
     window.addEventListener('beforeinstallprompt', handler);
-
-    // For iOS - show the prompt anyway since they don't have beforeinstallprompt
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-      setShowPrompt(true);
-    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
@@ -47,7 +49,7 @@ export default function InstallPrompt() {
     
     if (isIOS) {
       // iOS doesn't support programmatic install, show instructions
-      alert('To install:\n1. Tap the Share button\n2. Tap "Add to Home Screen"\n3. Tap "Add"');
+      alert('To install BLOM Academy:\\n\\n1. Tap the Share button (center bottom)\\n2. Scroll down and tap "Add to Home Screen"\\n3. Tap "Add"');
       return;
     }
 
@@ -77,12 +79,25 @@ export default function InstallPrompt() {
   };
 
   // Don't show if already installed or dismissed
-  if (!showPrompt || dismissed) {
+  if (dismissed) {
     return null;
   }
 
-  // Check if it's iOS (Safari doesn't support beforeinstallprompt)
+  // Check if it's iOS
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches;
+
+  // Only show on mobile or when PWA is supported
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isDesktop = !isMobile;
+
+  // Show on mobile, or desktop when the browser supports it
+  if (!isMobile && !deferredPrompt && !isIOS) {
+    return null;
+  }
+
+  if (!showPrompt) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm">
