@@ -1,4 +1,5 @@
 import { TopBar } from './TopBar';
+import InstallPrompt from './InstallPrompt';
 
 export const AppShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -7,6 +8,7 @@ export const AppShell = ({ children }: { children: React.ReactNode }) => {
       <main className="pt-28 md:pt-20">
         {children}
       </main>
+      <InstallPrompt />
     </div>
   );
 };

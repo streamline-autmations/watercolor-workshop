@@ -13,7 +13,7 @@ export default defineConfig(() => ({
     dyadComponentTagger(),
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: ["blom-academy-favicon.webp"],
       manifest: {
         name: "BLOM Academy",
