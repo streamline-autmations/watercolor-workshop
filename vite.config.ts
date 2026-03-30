@@ -14,7 +14,7 @@ export default defineConfig(() => ({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["blom-academy-favicon.webp"],
+      includeAssets: ["blom-academy-favicon.webp", "pwa-icon-192.png", "pwa-icon-512.png", "pwa-icon-512-maskable.png"],
       manifest: {
         name: "BLOM Academy",
         short_name: "BLOM Academy",
@@ -28,22 +28,22 @@ export default defineConfig(() => ({
         id: "/",
         icons: [
           {
-            src: "/blom-academy-favicon.webp",
+            src: "/pwa-icon-192.png",
             sizes: "192x192",
-            type: "image/webp",
-            purpose: "any maskable"
-          },
-          {
-            src: "/blom-academy-favicon.webp",
-            sizes: "512x512",
-            type: "image/webp",
-            purpose: "any maskable"
-          },
-          {
-            src: "/blom-academy-favicon.webp",
-            sizes: "512x512",
-            type: "image/webp",
+            type: "image/png",
             purpose: "any"
+          },
+          {
+            src: "/pwa-icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any"
+          },
+          {
+            src: "/pwa-icon-512-maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           }
         ],
         categories: ["education", "lifestyle"],
