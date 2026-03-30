@@ -14,7 +14,7 @@ export default defineConfig(() => ({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["blom-academy-favicon.webp"],
+      includeAssets: ["blom-academy-favicon.webp", "manifest.json"],
       manifest: {
         name: "BLOM Academy",
         short_name: "BLOM Academy",
