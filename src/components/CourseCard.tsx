@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PillTag } from './PillTag';
 import { ProgressBar } from './ProgressBar';
 import { useUserState } from '@/hooks/useUserState';
-import { Button } from './ui/button';
 import { Snowflake } from 'lucide-react';
 
 interface CourseCardProps {
@@ -33,15 +32,7 @@ export const CourseCard = ({ course }: CourseCardProps) => {
           </div>
           <p className="text-sm text-body-text/80 line-clamp-2 h-10">{course.summary}</p>
           
-          {course.priceZAR ? (
-            <div className="flex justify-between items-center pt-2">
-              <div>
-                <span className="font-bold text-lg text-blom-ink">ZAR {course.priceZAR}</span>
-                <PillTag className="ml-2">{course.durationText}</PillTag>
-              </div>
-              <Button variant="outline" size="sm" className="rounded-full border-accent-foreground/50 text-accent-foreground hover:bg-accent">View Details</Button>
-            </div>
-          ) : progress > 0 && (
+          {progress > 0 && (
             <div>
               <div className="flex justify-between items-center text-xs mb-1">
                 <span className="font-medium text-body-text">Progress</span>
