@@ -68,12 +68,10 @@ const allCourses: Course[] = [
       "Certificate of completion available upon finishing all lessons.",
     ],
     materials: [
-      { name: "Fine Line Detailer Brush", image: "/brush.webp", link: "https://www.takealot.com/5pcs-nail-stretching-brush-set-line-pattern-paint-pen-nail-stret/PLID96616954" },
-      { name: "Practice Tips", image: "/tips.webp", link: "https://www.takealot.com/imbali-portable-fan-gel-polish-colour-display-natural-nail-colou/PLID64858431" },
-      { name: "Watercolor Palette", image: "/palette.webp", link: "https://atlaspaints.co.za/shop/mont-marte-two-seasons-watercolours-18pce-12ml/" },
-      { name: "White Gel Polish or Acrylic", image: "/gel.webp", link: "https://artattack.co.za/iris-acrylic/iris-acrylic-paints-75ml-tubes/" },
-      { name: "Buffer", image: "/buffer.webp", link: "https://www.takealot.com/professional-nail-and-beauty-4-way-white-buffer/PLID91636988" },
-      { name: "Bowl of Water", image: "/water.webp" },
+      { name: "Blom Gel Paint Set", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1772433762/GelPaints1_buvq6f.jpg", link: "https://blom-cosmetics.co.za/products/blom-gel-paint-set-12x-colours" },
+      { name: "Nail Forms", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1771405847/nail-forms-white_u5dyzz.webp", link: "https://blom-cosmetics.co.za/products/nail-forms" },
+      { name: "Professional Detail Brush", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1771405824/detail-brush-set-colorful_xylfgh.webp", link: "https://blom-cosmetics.co.za/products/professional-detail-brush" },
+      { name: "Paint Brush", image: "/brush.webp" },
     ]
   },
   {
@@ -199,18 +197,18 @@ export const lessons: Lesson[] = [
   
   // Faded Flowers Workshop Lessons
   // Module 1 - Welcome & Materials
-  { id: "ff-l1-1", moduleId: "ff-m1", title: "What You Need", durationSec: 300, poster: "https://picsum.photos/seed/ff-l1-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_1?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1, isPreview: true },
+  { id: "ff-l1-1", moduleId: "ff-m1", title: "What You Need", durationSec: 300, poster: "https://picsum.photos/seed/ff-l1-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/e9b60b22-3a84-4948-bdcf-434898c02fe7?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1, isPreview: true },
 
   // Module 2 - Sketch & Techniques
-  { id: "ff-l2-1", moduleId: "ff-m2", title: "Sketch Description – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/ff-l2-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_2?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
+  { id: "ff-l2-1", moduleId: "ff-m2", title: "Sketch Description – Part 1", durationSec: 300, poster: "https://picsum.photos/seed/ff-l2-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/84d6d45d-5f6b-4ec1-aa99-9b8cd6cf283c?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
 
   // Module 3 - Step-by-Step Designs
-  { id: "ff-l3-1", moduleId: "ff-m3", title: "Design 1 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_3?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
-  { id: "ff-l3-2", moduleId: "ff-m3", title: "Design 2 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_4?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 2 },
-  { id: "ff-l3-3", moduleId: "ff-m3", title: "Design 3 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-3/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_5?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 3 },
-  { id: "ff-l3-4", moduleId: "ff-m3", title: "Design 4 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-4/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_6?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 4 },
-  { id: "ff-l3-5", moduleId: "ff-m3", title: "Design 5 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-5/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_7?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 5 },
-  { id: "ff-l3-6", moduleId: "ff-m3", title: "Design 6 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-6/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/PLACEHOLDER_VIDEO_ID_8?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 6 },
+  { id: "ff-l3-1", moduleId: "ff-m3", title: "Design 1 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-1/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/015be297-58ff-4097-a12e-aaaa10579331?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 1 },
+  { id: "ff-l3-2", moduleId: "ff-m3", title: "Design 2 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-2/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/e3f4aa2c-3368-4470-9a0b-b08216f4c97c?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 2 },
+  { id: "ff-l3-3", moduleId: "ff-m3", title: "Design 3 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-3/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/a449c6e7-779b-4072-9307-5846ece42160?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 3 },
+  { id: "ff-l3-4", moduleId: "ff-m3", title: "Design 4 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-4/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/f5cf52cf-213f-480c-ba56-7f5fb54bef3d?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 4 },
+  { id: "ff-l3-5", moduleId: "ff-m3", title: "Design 5 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-5/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/88e5b1db-6a4d-403b-b2a3-d693abcf9510?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 5 },
+  { id: "ff-l3-6", moduleId: "ff-m3", title: "Design 6 – Faded Floral", durationSec: 300, poster: "https://picsum.photos/seed/ff-l3-6/400/225", videoUrl: "https://iframe.mediadelivery.net/embed/495863/ac65ae77-8461-4a06-9f0b-fd2825fd3b8c?autoplay=true&loop=false&muted=false&preload=true&responsive=true", resources: [], order: 6 },
 
   // Module 4 - Certificate of Completion
   { id: "ff-l4-1", moduleId: "ff-m4", title: "Certificate Mini-Assignment", durationSec: 60, poster: "https://picsum.photos/seed/ff-cert/400/225", content: `<h2>🎓 Mini Assignment for Your Certificate of Completion</h2><p>To receive your Certificate of Completion, you'll need to complete a short but important assignment. This ensures that you've practiced the skills taught in the workshop and can confidently apply them.</p><h3>What to Submit:</h3><ul><li><strong>6 individual photos</strong> – one of each design you learned in the workshop.</li><li><strong>1 group photo</strong> – showing all six designs together.</li></ul><h3>How to Submit:</h3><p>Please email your photos to: <strong><a href="mailto:shopblomcosmetics@gmail.com" class="text-primary hover:underline">shopblomcosmetics@gmail.com</a></strong></p><h3>What Happens Next:</h3><ol><li>Your work will be reviewed by your mentor.</li><li>If your designs meet the standard, you will receive your Certificate of Completion via email.</li><li>If improvements are needed, you'll receive personalized feedback and guidance on what to practice. Once you've refined your work, you can resubmit your photos for review again.</li></ol><p>This process is not about perfection—it's about growth. 💕 By completing this assignment, you'll not only earn your certificate but also gain confidence in creating these beautiful faded floral nail art designs.</p>`, resources: [], order: 1 },
