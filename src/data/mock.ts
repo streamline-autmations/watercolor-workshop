@@ -71,7 +71,7 @@ const allCourses: Course[] = [
       { name: "Blom Gel Paint Set", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1772433762/GelPaints1_buvq6f.jpg", link: "https://blom-cosmetics.co.za/products/blom-gel-paint-set-12x-colours" },
       { name: "Nail Forms", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1771405847/nail-forms-white_u5dyzz.webp", link: "https://blom-cosmetics.co.za/products/nail-forms" },
       { name: "Professional Detail Brush", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1771405824/detail-brush-set-colorful_xylfgh.webp", link: "https://blom-cosmetics.co.za/products/professional-detail-brush" },
-      { name: "Paint Brush", image: "/brush.webp" },
+      { name: "Brush Gallery Bristle Filbert (#2)", image: "https://res.cloudinary.com/drsrbzm2t/image/upload/q_auto/f_auto/v1775643852/WhatsApp_Image_2026-04-08_at_12.15.32_wjspfh.jpg", popup: "Brush Gallery Bristle Filbert (#2) — Code 1181805\nR55.60 per brush, available at any PEP store, or find it in-store at our BLOM Cosmetics store." },
     ]
   },
   {

@@ -7,6 +7,7 @@ import { ModuleCardSkeleton } from '@/components/ModuleCardSkeleton';
 import { useUserState } from '@/hooks/useUserState';
 import { Button } from '@/components/ui/button';
 import { Award, Brush } from 'lucide-react';
+import { toast } from 'sonner';
 import { FestiveBanner } from '@/components/FestiveBanner';
 
 const CourseDetail = () => {
@@ -86,6 +87,19 @@ const CourseDetail = () => {
                   <a key={material.name} href={material.link} target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
                     {content}
                   </a>
+                );
+              }
+
+              if (material.popup) {
+                return (
+                  <button
+                    key={material.name}
+                    type="button"
+                    className="block w-full text-left hover:opacity-80 transition-opacity cursor-pointer"
+                    onClick={() => toast.info(material.popup, { duration: 6000 })}
+                  >
+                    {content}
+                  </button>
                 );
               }
 

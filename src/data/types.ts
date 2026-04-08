@@ -11,7 +11,7 @@ export type Course = {
   tagline?: string;
   description?: string;
   notes?: string[];
-  materials?: { name: string; image: string; link?: string; }[];
+  materials?: { name: string; image: string; link?: string; popup?: string; }[];
 };
 
 export type Module = {
